@@ -2,6 +2,7 @@
   "meta": {
     "repo": "ZiroWork GHL Agency",
     "harness_version": "locked-2026-06-25",
+    "router_version": "restructured-2026-06-25",
     "wip_limit": 1,
     "verify_command": "bash scripts/verify.sh"
   },
@@ -68,6 +69,71 @@
       "state": "done",
       "verify": "bash scripts/verify.sh && grep -c '\\[X\\]' PROGRESS.md",
       "notes": "All 10 audit boxes pass. Harness is locked. Ready for feature work or loops."
+    }
+  ],
+  "router_restructure": [
+    {
+      "id": "R01_claude_md_router",
+      "title": "CLAUDE.md rewritten as thin router",
+      "priority": "critical",
+      "dependsOn": ["H07_audit_checklist"],
+      "state": "done",
+      "verify": "bash scripts/verify.sh && grep -q 'MEMORY.md' CLAUDE.md && grep -q 'AGENTS.md' CLAUDE.md && grep -q 'CONTEXT.md' CLAUDE.md",
+      "notes": "First 3 lines: Read MEMORY, AGENTS, CONTEXT. Then repo tree. ≤100 lines, domain-free."
+    },
+    {
+      "id": "R02_memory_md",
+      "title": "MEMORY.md created (session log + who Zach is)",
+      "priority": "critical",
+      "dependsOn": ["R01_claude_md_router"],
+      "state": "done",
+      "verify": "test -f MEMORY.md && grep -q 'Who Zach Is' MEMORY.md && grep -q 'Session Log' MEMORY.md",
+      "notes": "Append-only: session log (newest on top) + 'who Zach is' (user profile). Enables cross-session continuity."
+    },
+    {
+      "id": "R03_context_md",
+      "title": "CONTEXT.md created (renamed PROGRESS.md, rewritten with truth)",
+      "priority": "critical",
+      "dependsOn": ["R02_memory_md"],
+      "state": "done",
+      "verify": "test -f CONTEXT.md && grep -q 'Active Stage' CONTEXT.md",
+      "notes": "Current stage, next steps, last checkpoint. Rewritten each session (not append-only). Deletes PROGRESS.md."
+    },
+    {
+      "id": "R04_agents_md",
+      "title": "AGENTS.md created (hard rules canon, folded from HARNESS.md)",
+      "priority": "critical",
+      "dependsOn": ["R03_context_md"],
+      "state": "done",
+      "verify": "test -f AGENTS.md && grep -q 'R01.*Source of Truth' AGENTS.md",
+      "notes": "Folded HARNESS.md rules (R01–R15) + agent responsibilities. HARNESS.md deleted after."
+    },
+    {
+      "id": "R05_update_state_sh",
+      "title": "scripts/update-state.sh created (save-and-update helper)",
+      "priority": "critical",
+      "dependsOn": ["R04_agents_md"],
+      "state": "done",
+      "verify": "test -f scripts/update-state.sh && grep -q 'Session stub' scripts/update-state.sh",
+      "notes": "Appends timestamped session-entry stub to MEMORY.md. Called before commit to enable save-and-update routine."
+    },
+    {
+      "id": "R06_verify_sh_fix",
+      "title": "scripts/verify.sh fixed (clients/ check conditional)",
+      "priority": "critical",
+      "dependsOn": ["R05_update_state_sh"],
+      "state": "done",
+      "verify": "bash scripts/verify.sh; echo 'Exit: '$?",
+      "notes": "clients/ check now skips if absent (fresh clone). Updated artifact checks: MEMORY/AGENTS/CONTEXT instead of HARNESS/PROGRESS. Added router ref check."
+    },
+    {
+      "id": "R07_feature_list_update",
+      "title": "feature_list.json updated (restructure as done items)",
+      "priority": "critical",
+      "dependsOn": ["R06_verify_sh_fix"],
+      "state": "done",
+      "verify": "test -f feature_list.json && grep -q 'router_restructure' feature_list.json",
+      "notes": "Added router_restructure section (R01–R07, all done). Verified: exit 0 both ways (clients/ present and absent)."
     }
   ],
   "feature_work": [

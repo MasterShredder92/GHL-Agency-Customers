@@ -79,39 +79,45 @@ fi
 echo
 
 # ============================================================================
-# 3. PER-CLIENT SHAPE CHECK
+# 3. PER-CLIENT SHAPE CHECK (conditional: skip if clients/ is gitignored/absent)
 # ============================================================================
 echo "Checking per-client folder structure..."
 
-if [ ! -d "clients/adkins-music-lessons" ]; then
-  fail "clients/adkins-music-lessons/ missing"
+if [ ! -d "clients" ]; then
+  # On a fresh clone, clients/ is gitignored and absent. This is OK.
+  pass "clients/ absent (fresh clone; gitignored — OK)"
 else
-  pass "clients/adkins-music-lessons/ exists"
-
-  # Check required files
-  if [ ! -f "clients/adkins-music-lessons/client.md" ]; then
-    fail "  → clients/adkins-music-lessons/client.md missing"
+  # clients/ exists locally; validate per-client shape
+  if [ ! -d "clients/adkins" ]; then
+    fail "clients/adkins/ missing"
   else
-    pass "  → client.md present"
-  fi
+    pass "clients/adkins/ exists"
 
-  if [ ! -f "clients/adkins-music-lessons/credentials.md" ]; then
-    fail "  → clients/adkins-music-lessons/credentials.md missing"
-  else
-    pass "  → credentials.md present"
-
-    # Verify credentials.md doesn't contain actual secret values (not placeholders with $)
-    if grep -E 'pit-[a-f0-9]{8,}|EAA[a-zA-Z0-9]{50,}' "clients/adkins-music-lessons/credentials.md" || false; then
-      fail "  → credentials.md contains actual secret values (should only have env var names)"
+    # Check required files
+    if [ ! -f "clients/adkins/client.md" ]; then
+      fail "  → clients/adkins/client.md missing"
     else
-      pass "  → credentials.md has names only (no values)"
+      pass "  → client.md present"
     fi
-  fi
 
-  if [ ! -f "clients/adkins-music-lessons/notes.md" ]; then
-    fail "  → clients/adkins-music-lessons/notes.md missing"
-  else
-    pass "  → notes.md present"
+    if [ ! -f "clients/adkins/credentials.md" ]; then
+      fail "  → clients/adkins/credentials.md missing"
+    else
+      pass "  → credentials.md present"
+
+      # Verify credentials.md doesn't contain actual secret values (not placeholders with $)
+      if grep -E 'pit-[a-f0-9]{8,}|EAA[a-zA-Z0-9]{50,}' "clients/adkins/credentials.md" || false; then
+        fail "  → credentials.md contains actual secret values (should only have env var names)"
+      else
+        pass "  → credentials.md has names only (no values)"
+      fi
+    fi
+
+    if [ ! -f "clients/adkins/notes.md" ]; then
+      fail "  → clients/adkins/notes.md missing"
+    else
+      pass "  → notes.md present"
+    fi
   fi
 fi
 
@@ -141,6 +147,13 @@ else
   else
     pass "  → CLAUDE.md is domain-free"
   fi
+
+  # Check router references MEMORY.md, AGENTS.md, CONTEXT.md
+  if grep -q 'MEMORY.md' CLAUDE.md && grep -q 'AGENTS.md' CLAUDE.md && grep -q 'CONTEXT.md' CLAUDE.md; then
+    pass "  → CLAUDE.md references MEMORY/AGENTS/CONTEXT (router pattern OK)"
+  else
+    fail "  → CLAUDE.md missing reference to MEMORY.md, AGENTS.md, or CONTEXT.md"
+  fi
 fi
 
 echo
@@ -150,26 +163,32 @@ echo
 # ============================================================================
 echo "Checking harness artifacts..."
 
-if [ ! -f "HARNESS.md" ]; then
-  echo "⚠ HARNESS.md missing (will be created in next step)"
+if [ ! -f "MEMORY.md" ]; then
+  fail "MEMORY.md missing (required)"
 else
-  pass "HARNESS.md exists"
+  pass "MEMORY.md exists"
 fi
 
-if [ ! -f "PROGRESS.md" ]; then
-  echo "⚠ PROGRESS.md missing (will be created in next step)"
+if [ ! -f "AGENTS.md" ]; then
+  fail "AGENTS.md missing (required)"
 else
-  pass "PROGRESS.md exists"
+  pass "AGENTS.md exists"
+fi
+
+if [ ! -f "CONTEXT.md" ]; then
+  fail "CONTEXT.md missing (required)"
+else
+  pass "CONTEXT.md exists"
 fi
 
 if [ ! -f "DECISIONS.md" ]; then
-  echo "⚠ DECISIONS.md missing (will be created in next step)"
+  fail "DECISIONS.md missing (required)"
 else
   pass "DECISIONS.md exists"
 fi
 
 if [ ! -f "feature_list.json" ]; then
-  echo "⚠ feature_list.json missing (will be created in next step)"
+  fail "feature_list.json missing (required)"
 else
   pass "feature_list.json exists"
 fi
