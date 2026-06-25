@@ -1,7 +1,16 @@
-# Environment variables (NEVER commit)
+# CRITICAL: Secrets & Client Data (NEVER commit)
 .env
 .env.local
 .env.*.local
+clients/
+snapshots/
+
+# Credentials & Business Info (belt-and-suspenders)
+*_credentials.json
+*_secrets.json
+*_keys.json
+credentials.md
+secrets.md
 
 # Dependencies
 node_modules/
@@ -33,11 +42,6 @@ out/
 *.tmp
 .cache/
 temp/
-
-# Secrets/credentials (belt-and-suspenders)
-*_credentials.json
-*_secrets.json
-*_keys.json
 
 # Local config (Claude Code, MCP)
 .claude/
