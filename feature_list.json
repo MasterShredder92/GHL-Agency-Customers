@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "repo": "ZiroWork GHL Agency",
+    "harness_version": "locked-2026-06-25",
+    "wip_limit": 1,
+    "verify_command": "bash scripts/verify.sh"
+  },
+  "harness_lockdown": [
+    {
+      "id": "H01_verify_gate",
+      "title": "Verification gate (scripts/verify.sh)",
+      "priority": "critical",
+      "dependsOn": [],
+      "state": "done",
+      "verify": "bash scripts/verify.sh",
+      "notes": "Gate created, exits 0. Checks: secrets scan, hardcoded IDs, per-client shape, router lint."
+    },
+    {
+      "id": "H02_state_artifacts",
+      "title": "State artifacts (PROGRESS.md + DECISIONS.md)",
+      "priority": "critical",
+      "dependsOn": ["H01_verify_gate"],
+      "state": "done",
+      "verify": "test -f PROGRESS.md && test -f DECISIONS.md",
+      "notes": "PROGRESS.md: where we are + next steps. DECISIONS.md: why each choice was made (append-only)."
+    },
+    {
+      "id": "H03_feature_list",
+      "title": "Scope primitive (feature_list.json)",
+      "priority": "critical",
+      "dependsOn": ["H02_state_artifacts"],
+      "state": "done",
+      "verify": "test -f feature_list.json && grep -q 'dependsOn' feature_list.json",
+      "notes": "This file. Enforces sequencing + WIP=1. Data, not prose. Prevents agent from skipping steps."
+    },
+    {
+      "id": "H04_harness_md",
+      "title": "Harness rule canon (HARNESS.md)",
+      "priority": "critical",
+      "dependsOn": ["H03_feature_list"],
+      "state": "done",
+      "verify": "test -f HARNESS.md && grep -q 'R01' HARNESS.md",
+      "notes": "The standard this repo is measured against. Domain-free rules (R01–R15+). Crosswalks to REPO_BLUEPRINT.md."
+    },
+    {
+      "id": "H05_hook_wiring",
+      "title": "Hook wiring (.githooks/pre-commit)",
+      "priority": "critical",
+      "dependsOn": ["H04_harness_md"],
+      "state": "done",
+      "verify": "test -f .githooks/pre-commit && grep -q 'verify.sh' .githooks/pre-commit",
+      "notes": "Makes the gate binding. Pre-commit runs verify.sh; non-zero exit refuses commit. Not bypassable."
+    },
+    {
+      "id": "H06_init_script",
+      "title": "Init script (scripts/init.sh)",
+      "priority": "critical",
+      "dependsOn": ["H05_hook_wiring"],
+      "state": "done",
+      "verify": "test -f scripts/init.sh && grep -q '.env.example' scripts/init.sh",
+      "notes": "One-shot environment setup: .env from template, deps, GHL MCP reachable, PIT valid. Runs before feature work."
+    },
+    {
+      "id": "H07_audit_checklist",
+      "title": "Audit checklist (all green)",
+      "priority": "critical",
+      "dependsOn": ["H06_init_script"],
+      "state": "done",
+      "verify": "bash scripts/verify.sh && grep -c '\\[X\\]' PROGRESS.md",
+      "notes": "All 10 audit boxes pass. Harness is locked. Ready for feature work or loops."
+    }
+  ],
+  "feature_work": [
+    {
+      "id": "F01_a2p_approval",
+      "title": "A2P 10DLC SMS approval",
+      "priority": "blocker",
+      "dependsOn": [],
+      "state": "pending",
+      "verify": "grep -i 'approved' clients/adkins-music-lessons/notes.md || echo 'awaiting approval'",
+      "notes": "Blocks all SMS-dependent features (F02, F03, F04). Status: awaiting carrier approval. See clients/adkins-music-lessons/notes.md."
+    },
+    {
+      "id": "F02_lead_qualification_workflow",
+      "title": "Adkins Lead Qualification workflow",
+      "priority": "high",
+      "dependsOn": ["H07_audit_checklist", "F01_a2p_approval"],
+      "state": "pending",
+      "verify": "TODO: confirm GHL workflow exists via GHL API call",
+      "notes": "Trigger: contact form submit. Action: send SMS via LC Phone. Condition: if responds → tag 'Qualified', else 'Nurture'."
+    },
+    {
+      "id": "F03_no_response_followup",
+      "title": "No-response follow-up workflow",
+      "priority": "high",
+      "dependsOn": ["F02_lead_qualification_workflow"],
+      "state": "pending",
+      "verify": "TODO: confirm GHL workflow exists via GHL API call",
+      "notes": "Trigger: contact created 48h ago, no response. Action: send follow-up email or SMS."
+    },
+    {
+      "id": "F04_trial_booking_workflow",
+      "title": "Trial booking automation",
+      "priority": "high",
+      "dependsOn": ["F02_lead_qualification_workflow"],
+      "state": "pending",
+      "verify": "TODO: confirm GHL + Square integration via API call",
+      "notes": "Trigger: contact qualified. Action: send SMS with 3 time slots (from Square). If lead selects → create appointment in Square."
+    },
+    {
+      "id": "F05_social_autopost",
+      "title": "Social auto-posting (CSV → GHL)",
+      "priority": "medium",
+      "dependsOn": ["H07_audit_checklist"],
+      "state": "pending",
+      "verify": "TODO: confirm CSV upload + GHL social integration",
+      "notes": "Load posts via Advanced CSV. Deploy to Adkins initially, then scale to other locations."
+    },
+    {
+      "id": "F06_scale_to_locations",
+      "title": "Scale to Bellevue, Gretna, Elkhorn",
+      "priority": "medium",
+      "dependsOn": ["F02_lead_qualification_workflow", "F03_no_response_followup", "F04_trial_booking_workflow"],
+      "state": "pending",
+      "verify": "TODO: confirm all 4 locations have workflows deployed",
+      "notes": "After Omaha validation (30-day proof). Tag-based filtering per location in same GHL sub-account."
+    },
+    {
+      "id": "F07_onboard_next_client",
+      "title": "Onboard second client",
+      "priority": "low",
+      "dependsOn": ["H07_audit_checklist", "F06_scale_to_locations"],
+      "state": "pending",
+      "verify": "bash scripts/onboard-subaccount.sh <slug> '<name>' && test -f clients/<slug>/client.md",
+      "notes": "Implements scripts/onboard-subaccount.sh. Adkins is proof; second client validates the snapshot and onboard script."
+    }
+  ],
+  "ops_automation": [
+    {
+      "id": "L01_cross_client_reporting",
+      "title": "Cross-client bulk reporting loop",
+      "priority": "low",
+      "dependsOn": ["H07_audit_checklist", "F07_onboard_next_client"],
+      "state": "pending",
+      "verify": "bash scripts/bulk-report.sh && test -f reports/bulk-report-*.html",
+      "notes": "NOT A LOOP YET. Blocked by harness green + ≥2 active clients. Will become a loop (daily, capped) once feature work is done. See LOOPS.md (TBD)."
+    }
+  ],
+  "notes": "WIP=1: only one item in-flight at a time. dependsOn enforces sequencing. Verify command per item. Feature work starts AFTER harness audit (H07) is green."
+}

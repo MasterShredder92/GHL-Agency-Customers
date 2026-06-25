@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# Pre-commit hook: Run the verification gate before allowing commit.
+# This makes the gate NON-BYPASSABLE (B05 from REPO_BLUEPRINT.md).
+# Exit 0 = commit allowed. Exit non-zero = commit refused.
+
+set -e
+
+REPO_ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+cd "$REPO_ROOT"
+
+echo "Running verification gate before commit..."
+echo
+
+bash scripts/verify.sh
+
+if [ $? -eq 0 ]; then
+  echo
+  echo "✓ Gate passed. Commit allowed."
+  exit 0
+else
+  echo
+  echo "✗ Gate failed. Commit refused. Fix the issues above and try again."
+  exit 1
+fi
