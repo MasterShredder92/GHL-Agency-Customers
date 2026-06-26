@@ -189,13 +189,13 @@ async function verify() {
   try {
     const fields = await apiRequest('GET', `/locations/${LOCATION_ID}/customFields`);
     console.log(`  [OK] Custom Fields: ${fields.customFields?.length || 0} total`);
-    fields.customFields?.forEach(f => console.log(`    - ${f.displayName}`));
+    fields.customFields?.forEach(f => console.log(`    - ${f.name}`));
   } catch {
     console.log(`  [WARN] Could not verify custom fields`);
   }
 
   try {
-    const pipelines = await apiRequest('GET', '/opportunities/pipelines');
+    const pipelines = await apiRequest('GET', `/opportunities/pipelines?locationId=${LOCATION_ID}`);
     const pipeline = pipelines.pipelines?.find(p => p.name === config.PIPELINE.name);
     if (pipeline) {
       console.log(`  [OK] Pipeline '${config.PIPELINE.name}':`);
