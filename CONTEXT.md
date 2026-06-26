@@ -40,13 +40,27 @@
 
 ## What's Next (In Order)
 
+### PHASE E: CRM Foundation for Adkins (In Progress)
+
+**CURRENT (This Session):**
+1. **CRM Foundation Setup** (SMS-independent, prerequisite for all Adkins features)
+   - Status: WIP — scripts ready, API credentials pending verification
+   - Location ID: `TCahcPK9X1pptNjBJxP3`
+   - API Key: stored in `.env` + `.mcp.json` (NEVER in tracked files)
+   - What to create:
+     - Custom fields: instrument, student_age, skill_level, preferred_times, lead_source
+     - Tags: trial-requested, trial-booked, trial-completed, enrolled, lost, nurture
+     - Pipeline: "Trial to Enrollment" (stages: New Lead → Contacted → Trial Booked → Trial Completed → Enrolled)
+   - Blocker: API returning 404; need to verify credentials are live/active in GHL
+   - Next: restart Claude Code + retry API calls, OR confirm credentials validity
+
 ### PHASE D: Feature Work — F01 (BLOCKER — gates all SMS)
 
-**IMMEDIATE (This Sprint):**
+**THEN (After CRM Foundation + F01 Approved):**
 1. **F01 — A2P 10DLC Approval** (BLOCKER — gates all SMS flows)
    - Status: awaiting carrier approval (external; typically 3–5 business days)
    - Until approved: SMS-independent work only (lead capture, email, etc.)
-   - dependsOn: none
+   - dependsOn: CRM Foundation
    - Next: check `clients/adkins/notes.md` for approval status; SMS features unlock when approved
 
 ### THEN (After F01 Approved)
