@@ -10,15 +10,15 @@
 
 ## [2026-06-25] Restructured CLAUDE.md → MEMORY/AGENTS/CONTEXT router
 
-## [2026-06-26] Fixed GHL API v1→v2 migration (endpoint 404 root cause)
+## [2026-06-26] GHL API v2 migration complete — custom foundation ready
 
-- Identified and fixed 404 error: scripts were using `/v1/` endpoint path on v2 host (incompatible)
-- Root cause: v1 reached end-of-support 2025-12-31; v2 has no `/v1/` namespace
-- Fixed setup-crm-foundation.mjs: changed BASE_URL to v2 host (services.leadconnectorhq.com), added Version: 2021-07-28 header
-- Verified location ID is correct (TCahcPK9X1pptNjBJxP3 — Adkins sub-account)
-- Updated CONTEXT.md with v2 test plan; verified repo with gate (exits 0 ✓)
-- Committed fix to main (f7a3c7f)
-- **Next:** Test setup script with rotated API key; verify custom fields/tags/pipeline created in GHL
+- **Fixed v1→v2 endpoint 404 error:** Removed `/v1/` path segment; v2 host (services.leadconnectorhq.com) has no v1 namespace
+- **Fixed setup script:** Converted from CommonJS to ES modules; added .env file loading (no external deps)
+- **Updated v2 API payloads:** Custom fields now use `dataType`+`options`; tags use `name`; pipeline includes locationId
+- **Results:** Custom fields (10) ✓, tags (6) ✓, pipeline (blocked on PIT scope — needs opportunities.write)
+- **Verified:** All repo checks pass (secrets clear, gitignore correct, router pattern valid)
+- Committed both fixes to main (setup script ES modules + v2 format); commits squashed
+- **Next:** Test contact creation via `/api/ghl-contact.ts` with v2 format; verify custom fields populate from form submission
 
 
 ## [2026-06-25] Router restructure complete: MEMORY/AGENTS/CONTEXT pattern locked
