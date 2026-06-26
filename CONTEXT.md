@@ -1,8 +1,8 @@
 # Active Stage & Next Step
 
-**Active Stage:** Harness complete, committed, hook-wired, gate green on a fresh clone. WIP=1.
+**Active Stage:** CRM Foundation Setup (PHASE E) — In Progress. MCP live, pipeline + custom fields created. GHL contact sync next.
 
-**Last Checkpoint:** All structural rules in place. Repo is source of truth. Verification gate passes with clients/ present and absent. save-and-update routine wired.
+**Last Checkpoint:** A2P 10DLC approved ✓. MCP authenticated and reading real Adkins data ✓. Pipeline "Lead to Enrollment" live ✓. 8 custom fields created + verified ✓. GHL contact creation function written, awaiting SignupLanding.tsx path to integrate.
 
 ---
 
@@ -43,16 +43,18 @@
 ### PHASE E: CRM Foundation for Adkins (In Progress)
 
 **CURRENT (This Session):**
-1. **CRM Foundation Setup** (SMS-independent, prerequisite for all Adkins features)
-   - Status: WIP — scripts ready, API credentials pending verification
-   - Location ID: `TCahcPK9X1pptNjBJxP3`
-   - API Key: stored in `.env` + `.mcp.json` (NEVER in tracked files)
-   - What to create:
-     - Custom fields: instrument, student_age, skill_level, preferred_times, lead_source
-     - Tags: trial-requested, trial-booked, trial-completed, enrolled, lost, nurture
-     - Pipeline: "Trial to Enrollment" (stages: New Lead → Contacted → Trial Booked → Trial Completed → Enrolled)
-   - Blocker: API returning 404; need to verify credentials are live/active in GHL
-   - Next: restart Claude Code + retry API calls, OR confirm credentials validity
+1. **CRM Foundation Setup** ✅ DONE (except form integration)
+   - Status: MCP live, pipeline created, custom fields created
+   - Location ID: `TCahcPK9X1pptNjBJxP3` ✓
+   - API Key: in `.env` + `.mcp.json` (gitignored) ✓
+   - What was created:
+     - ✅ Pipeline: "Lead to Enrollment" (ID: `zs0YKAXYmMfV2nwygVs5`)
+       - Stages: New Lead → Contacted → Follow-Up → Enrolled → Lost
+     - ✅ Custom fields: instrument, student_age, skill_level, preferred_times, lead_source, military_family, has_instrument, preferred_location
+     - ✅ MCP authenticated + verified reading real Adkins data
+   - What's left:
+     - Integrate ghl.ts contact creation into SignupLanding.tsx (awaiting file path)
+     - Build instant SMS auto-reply workflow (next phase after form integration)
 
 ### PHASE D: Feature Work — F01 (BLOCKER — gates all SMS)
 
@@ -80,9 +82,9 @@
 
 ## Blockers
 
-- **A2P 10DLC approval** (external; Twilio/GHL process; 3–5 business days typically)
-  - All SMS features depend on this.
-  - F01 is a gate; all SMS work deferred until approved.
+- **SignupLanding.tsx file path** (user has website repo in different location)
+  - Need exact path to integrate ghl.ts contact creation
+  - Blocks form → GHL sync (non-blocking on submit, fire-and-forget)
 
 ---
 

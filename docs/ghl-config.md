@@ -64,8 +64,8 @@ All clients operate as sub-accounts under the ZiroWork agency. Each has a Locati
 
 | Client | Account | Location ID | Status |
 |--------|---------|-------------|--------|
-| **ZiroWork (Agency)** | Agency level | `yhTX395nrDIWlmHv5bfP` | Production |
-| **Adkins Music Lessons** | Sub-account | `Zwvc66b4SDwQ6MZ25wXY` | Production (SMS pending A2P approval) |
+| **ZiroWork (Agency)** | Agency level | `Zwvc66b4SDwQ6MZ25wXY` | Production |
+| **Adkins Music Lessons** | Sub-account | `TCahcPK9X1pptNjBJxP3` | Production (SMS A2P approved ✓) |
 
 **Why this matters:** When using MCP, you often specify a Location ID. The agency handles cross-client operations; sub-accounts handle per-client workflows.
 
