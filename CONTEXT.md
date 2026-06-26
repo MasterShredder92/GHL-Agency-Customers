@@ -1,8 +1,10 @@
 # Active Stage & Next Step
 
-**Active Stage:** CRM Foundation Setup (PHASE E) — In Progress. MCP live, pipeline + custom fields created. GHL contact sync next.
+**Active Stage:** GHL API Integration (PHASE E) — **API endpoint fixed, ready to test**.
 
-**Last Checkpoint:** A2P 10DLC approved ✓. MCP authenticated and reading real Adkins data ✓. Pipeline "Lead to Enrollment" live ✓. 8 custom fields created + verified ✓. GHL contact creation function written, awaiting SignupLanding.tsx path to integrate.
+**Status:** v1 endpoint bug fixed. Scripts now use v2 (services.leadconnectorhq.com, Version: 2021-07-28 header). Location ID verified: `TCahcPK9X1pptNjBJxP3` (Adkins).
+
+**Last Checkpoint:** A2P 10DLC approved ✓. Form → Supabase sync working ✓. 2P opt-in field created in GHL ✓. Frontend form has SMS consent checkbox ✓. Backend API endpoint created (`/api/ghl-contact.ts`) ✓. **Now:** Test v2 setup script with rotated API key.
 
 ---
 
@@ -40,21 +42,26 @@
 
 ## What's Next (In Order)
 
-### PHASE E: CRM Foundation for Adkins (In Progress)
+### PHASE E: GHL API Integration (Current)
 
-**CURRENT (This Session):**
-1. **CRM Foundation Setup** ✅ DONE (except form integration)
-   - Status: MCP live, pipeline created, custom fields created
-   - Location ID: `TCahcPK9X1pptNjBJxP3` ✓
-   - API Key: in `.env` + `.mcp.json` (gitignored) ✓
-   - What was created:
-     - ✅ Pipeline: "Lead to Enrollment" (ID: `zs0YKAXYmMfV2nwygVs5`)
-       - Stages: New Lead → Contacted → Follow-Up → Enrolled → Lost
-     - ✅ Custom fields: instrument, student_age, skill_level, preferred_times, lead_source, military_family, has_instrument, preferred_location
-     - ✅ MCP authenticated + verified reading real Adkins data
-   - What's left:
-     - Integrate ghl.ts contact creation into SignupLanding.tsx (awaiting file path)
-     - Build instant SMS auto-reply workflow (next phase after form integration)
+**BLOCKERS & FIXES (This Session):**
+1. **API Key Rotation** — COMPLETE (security incident)
+   - Old PIT: burned (pasted in chat, rotated immediately)
+   - New token: stored as `GHL_ADKINS_API_KEY` in `.env` (gitignored)
+
+2. **Endpoint Format Bug** — ROOT CAUSE of 404 errors
+   - ❌ Using: `/v1/contacts/` (v1 end-of-support Dec 31 2025)
+   - ✅ Should use: `/contacts/` (v2 current)
+   - ✅ locationId must be top-level in body (not just in customFields)
+   - ✅ customFields format: array of `{key/id, field_value}` not plain object
+
+**NEXT STEPS:**
+1. ✅ Fixed v1→v2 endpoint migration (BASE_URL, Version header, location ID verified)
+2. Test setup script: `node scripts/setup-crm-foundation.mjs` (requires rotated API key in `.env` as `GHL_ADKINS_API_KEY`)
+3. Verify custom fields, tags, pipeline created in GHL
+4. Update `/api/ghl-contact.ts` with v2 contact creation format (if needed)
+5. Test form submission end-to-end (Supabase → GHL sync)
+6. Build F02 Lead Qualification workflow (once GHL sync confirmed working)
 
 ### PHASE D: Feature Work — F01 (BLOCKER — gates all SMS)
 

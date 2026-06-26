@@ -14,7 +14,7 @@ const https = require('https');
 const API_KEY = process.env.GHL_ADKINS_API_KEY;
 const LOCATION_ID = process.env.GHL_ADKINS_LOCATION_ID || 'TCahcPK9X1pptNjBJxP3';
 
-const BASE_URL = 'https://services.leadconnectorhq.com/v1';
+const BASE_URL = 'https://services.leadconnectorhq.com';
 
 const config = {
   CUSTOM_FIELDS: [
@@ -82,7 +82,8 @@ function apiRequest(method, path, body = null) {
       method,
       headers: {
         'Authorization': `Bearer ${API_KEY}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Version': '2021-07-28'
       }
     };
 
