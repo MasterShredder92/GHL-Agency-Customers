@@ -10,16 +10,15 @@
 
 ## [2026-06-25] Restructured CLAUDE.md → MEMORY/AGENTS/CONTEXT router
 
-## [2026-06-26] [TO BE FILLED: brief title]
+## [2026-06-26] Fixed GHL API v1→v2 migration (endpoint 404 root cause)
 
-- [TO BE FILLED: bullet point summary]
-- **Next:** [TO BE FILLED: what's next]
-
-
-## [2026-06-26] [TO BE FILLED: brief title]
-
-- [TO BE FILLED: bullet point summary]
-- **Next:** [TO BE FILLED: what's next]
+- Identified and fixed 404 error: scripts were using `/v1/` endpoint path on v2 host (incompatible)
+- Root cause: v1 reached end-of-support 2025-12-31; v2 has no `/v1/` namespace
+- Fixed setup-crm-foundation.mjs: changed BASE_URL to v2 host (services.leadconnectorhq.com), added Version: 2021-07-28 header
+- Verified location ID is correct (TCahcPK9X1pptNjBJxP3 — Adkins sub-account)
+- Updated CONTEXT.md with v2 test plan; verified repo with gate (exits 0 ✓)
+- Committed fix to main (f7a3c7f)
+- **Next:** Test setup script with rotated API key; verify custom fields/tags/pipeline created in GHL
 
 
 ## [2026-06-25] Router restructure complete: MEMORY/AGENTS/CONTEXT pattern locked
