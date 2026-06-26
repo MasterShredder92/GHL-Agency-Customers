@@ -10,15 +10,14 @@
 
 ## [2026-06-25] Restructured CLAUDE.md → MEMORY/AGENTS/CONTEXT router
 
-## [2026-06-26] GHL API v2 migration complete — custom foundation ready
+## [2026-06-26] GHL v2 API complete — BUILD vs OPERATE architecture mastered
 
-- **Fixed v1→v2 endpoint 404 error:** Removed `/v1/` path segment; v2 host (services.leadconnectorhq.com) has no v1 namespace
-- **Fixed setup script:** Converted from CommonJS to ES modules; added .env file loading (no external deps)
-- **Updated v2 API payloads:** Custom fields now use `dataType`+`options`; tags use `name`; pipeline includes locationId
-- **Results:** Custom fields (10) ✓, tags (6) ✓, pipeline (blocked on PIT scope — needs opportunities.write)
-- **Verified:** All repo checks pass (secrets clear, gitignore correct, router pattern valid)
-- Committed both fixes to main (setup script ES modules + v2 format); commits squashed
-- **Next:** Test contact creation via `/api/ghl-contact.ts` with v2 format; verify custom fields populate from form submission
+- **Fixed v1→v2 migration:** Removed `/v1/` segments, added Version: 2021-07-28 header, placed locationId in body
+- **Fixed setup script:** ES modules, .env loading, v2 payload formats (dataType, name, etc.)
+- **Key insight:** GHL v2 is BUILD (UI) + OPERATE (API) split. Pipelines/workflows/funnels/forms are **UI-only** (no create endpoint). API can only move data through existing structures. The 401 on [PIPELINE] POST was not a scope issue — it was attempting a non-existent endpoint.
+- **What's done:** Custom fields (10) ✓, tags (6) ✓, website `/api/ghl-contact.ts` updated to v2 ✓
+- **What's next:** Form → GHL sync test; pipeline creation is manual UI work (create once, then script references stage IDs)
+- Committed: pipeline step refactored to GET-only + user guidance (don't build via API)
 
 
 ## [2026-06-25] Router restructure complete: MEMORY/AGENTS/CONTEXT pattern locked
