@@ -10,6 +10,18 @@
 
 ## [2026-06-25] Restructured CLAUDE.md → MEMORY/AGENTS/CONTEXT router
 
+## [2026-06-25] Router restructure complete: MEMORY/AGENTS/CONTEXT pattern locked
+
+- Restructured CLAUDE.md as thin router (3-line pattern → MEMORY/AGENTS/CONTEXT)
+- Created MEMORY.md (session log + "who Zach is"), AGENTS.md (hard rules R01–R15), CONTEXT.md (renamed PROGRESS.md)
+- Created scripts/update-state.sh (save-and-update helper: appends session stub to MEMORY.md)
+- Fixed scripts/verify.sh (clients/ check conditional; exits 0 both ways: fresh clone ✓ and local ✓)
+- Removed secrets from clients/adkins/credentials.md (now env var names only; values in .env, gitignored)
+- Updated feature_list.json (added router_restructure section R01–R07, all done)
+- **Committed to main** (efa5601)
+- **Next:** F01 — A2P 10DLC approval (blocks all SMS flows; SMS-independent work only until approved)
+
+
 - Folded HARNESS.md rules into AGENTS.md
 - Renamed PROGRESS.md → CONTEXT.md
 - Created MEMORY.md (this file) with session log

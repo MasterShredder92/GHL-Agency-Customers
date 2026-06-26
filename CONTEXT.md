@@ -24,37 +24,43 @@
 - [x] `scripts/init.sh` (environment standup: .env, deps, GHL connectivity)
 - [x] Audit checklist: all green
 
-### Router Restructure (Phase C — this session)
-- [x] CLAUDE.md rewritten as thin router (≤100 lines, no domain, points to MEMORY/AGENTS/CONTEXT)
-- [x] MEMORY.md created (session log, "who Zach is")
-- [x] PROGRESS.md renamed → CONTEXT.md (current truth)
-- [x] AGENTS.md created (folded HARNESS.md rules; hard rules canon)
-- [x] scripts/update-state.sh created (helper: append session stub to MEMORY.md)
-- [x] scripts/verify.sh fixed (clients/ check conditional; skips if absent for fresh clone)
-- [x] feature_list.json updated (restructure as done items)
-- [x] Verified: verify.sh exits 0 both ways (clients/ present and absent)
+### Router Restructure (Phase C — this session) ✅ COMPLETE
+- [x] CLAUDE.md rewritten as thin router (46 lines, no domain, 3-line pattern → MEMORY/AGENTS/CONTEXT)
+- [x] MEMORY.md created (session log + "who Zach is"; append-only)
+- [x] PROGRESS.md renamed → CONTEXT.md (current truth; rewrite each session)
+- [x] AGENTS.md created (folded HARNESS.md rules R01–R15; hard rules canon)
+- [x] scripts/update-state.sh created (helper: append timestamped session stub to MEMORY.md)
+- [x] scripts/verify.sh fixed (clients/ check conditional; exits 0 fresh clone ✓ and local ✓)
+- [x] clients/adkins/credentials.md cleaned (removed secrets; now env var names only)
+- [x] feature_list.json updated (added router_restructure section R01–R07, all done)
+- [x] **Committed to main** (efa5601: refactor: restructure CLAUDE.md → MEMORY/AGENTS/CONTEXT router pattern)
+- [x] save-and-update routine: executed and recorded
 
 ---
 
 ## What's Next (In Order)
 
-### IMMEDIATE (Feature Work)
+### PHASE D: Feature Work — F01 (BLOCKER — gates all SMS)
+
+**IMMEDIATE (This Sprint):**
 1. **F01 — A2P 10DLC Approval** (BLOCKER — gates all SMS flows)
-   - Apply for 10DLC number (manual GHL process)
+   - Status: awaiting carrier approval (external; typically 3–5 business days)
    - Until approved: SMS-independent work only (lead capture, email, etc.)
    - dependsOn: none
-   - verify: `curl -s https://rest-api.twilio.com/...` (check 10DLC status, pending/approved)
+   - Next: check `clients/adkins/notes.md` for approval status; SMS features unlock when approved
 
-### THEN (Adkins Zero-Limit Core)
-2. **F02 — Lead Capture via GHL Web Form** (SMS-independent)
-3. **F03 — Instant AI SMS Response** (blocked by F01)
-4. **F04 — Follow-Up Sequences** (blocked by F01)
-5. **F05 — Pipeline Management** (SMS-independent)
-6. **F06 — Reporting & Analytics** (SMS-independent)
+### THEN (After F01 Approved)
+
+**Adkins Zero-Limit Core (SMS-dependent):**
+2. **F02 — Lead Capture via GHL Web Form** (SMS-independent, start now)
+3. **F03 — Instant AI SMS Response** (blocked by F01; starts after approval)
+4. **F04 — Follow-Up Sequences** (blocked by F01; starts after approval)
+5. **F05 — Pipeline Management** (SMS-independent, can start now)
+6. **F06 — Reporting & Analytics** (SMS-independent, can start now)
 
 ### LATER (Cross-Client Loops)
 7. **F07 — Second Client Onboard** (after Adkins MVP ships)
-8. **L01 — Bulk Reporting Loop** (after ≥2 clients live)
+8. **L01 — Bulk Reporting Loop** (after ≥2 clients live; deferred per R12)
 
 ---
 
