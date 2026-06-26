@@ -1,10 +1,14 @@
 # Active Stage & Next Step
 
-**Active Stage:** GHL API Integration (PHASE E) — **API endpoint fixed, ready to test**.
+**Active Stage:** GHL API Integration (PHASE E) — **v2 API working, custom foundation created**.
 
-**Status:** v1 endpoint bug fixed. Scripts now use v2 (services.leadconnectorhq.com, Version: 2021-07-28 header). Location ID verified: `TCahcPK9X1pptNjBJxP3` (Adkins).
+**Status:** 
+- ✅ v1→v2 endpoint migration complete (BASE_URL fixed, Version header added)
+- ✅ Custom fields created (10 total: Instrument, Student Age, Skill Level, Preferred Times, Lead Source, + 5 defaults)
+- ✅ Tags created (6: trial-requested, trial-booked, trial-completed, enrolled, lost, nurture)
+- ⚠️ Pipeline creation blocked: PIT lacks `opportunities.write` scope (401 error)
 
-**Last Checkpoint:** A2P 10DLC approved ✓. Form → Supabase sync working ✓. 2P opt-in field created in GHL ✓. Frontend form has SMS consent checkbox ✓. Backend API endpoint created (`/api/ghl-contact.ts`) ✓. **Now:** Test v2 setup script with rotated API key.
+**Last Checkpoint:** A2P 10DLC approved ✓. Form → Supabase sync working ✓. 2P opt-in field created in GHL ✓. Frontend form has SMS consent checkbox ✓. Backend API endpoint created (`/api/ghl-contact.ts`) ✓. **Now:** Test form → GHL contact sync (custom fields ready).
 
 ---
 
@@ -57,11 +61,12 @@
 
 **NEXT STEPS:**
 1. ✅ Fixed v1→v2 endpoint migration (BASE_URL, Version header, location ID verified)
-2. Test setup script: `node scripts/setup-crm-foundation.mjs` (requires rotated API key in `.env` as `GHL_ADKINS_API_KEY`)
-3. Verify custom fields, tags, pipeline created in GHL
-4. Update `/api/ghl-contact.ts` with v2 contact creation format (if needed)
-5. Test form submission end-to-end (Supabase → GHL sync)
-6. Build F02 Lead Qualification workflow (once GHL sync confirmed working)
+2. ✅ Ran setup script: custom fields + tags created in GHL
+3. **[OPTIONAL] Fix pipeline 401 error:** Add `opportunities.write` scope to PIT in GHL Settings → Private Integrations (only needed for pipeline management; not required for lead capture)
+4. Update `/api/ghl-contact.ts` with v2 contact creation format (use `/contacts/` endpoint, add Version header)
+5. Test form submission end-to-end: Supabase form → `/api/ghl-contact.ts` → GHL contact creation
+6. Verify custom fields populated on GHL contact (from form)
+7. Build F02 Lead Qualification workflow (once GHL sync confirmed working)
 
 ### PHASE D: Feature Work — F01 (BLOCKER — gates all SMS)
 
