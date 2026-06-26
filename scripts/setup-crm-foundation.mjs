@@ -162,24 +162,24 @@ async function setupTags() {
 }
 
 async function setupPipeline() {
-  console.log('\n[PIPELINE]');
+  console.log('\n[PIPELINE] (UI-only — GET existing or create in UI)');
 
   try {
     const existing = await apiRequest('GET', `/opportunities/pipelines?locationId=${LOCATION_ID}`);
     const pipeline = existing.pipelines?.find(p => p.name === config.PIPELINE.name);
 
     if (pipeline) {
-      console.log(`  [OK] Pipeline '${config.PIPELINE.name}' already exists`);
+      console.log(`  [OK] Pipeline '${config.PIPELINE.name}' exists`);
       console.log(`  Stages:`);
-      pipeline.stages?.forEach(s => console.log(`    - ${s.name}`));
+      pipeline.stages?.forEach(s => console.log(`    - ${s.name} (id: ${s.id})`));
+      console.log(`\n  → Use stage IDs above when creating opportunities via API`);
     } else {
-      const payload = { ...config.PIPELINE, locationId: LOCATION_ID };
-      const created = await apiRequest('POST', '/opportunities/pipelines', payload);
-      console.log(`  [OK] Created pipeline '${config.PIPELINE.name}'`);
-      created.stages?.forEach(s => console.log(`    - ${s.name}`));
+      console.log(`  [INFO] Pipeline '${config.PIPELINE.name}' not found`);
+      console.log(`  → Create it in Adkins UI: Opportunities → Pipelines → Create New Pipeline`);
+      console.log(`  → Once created, re-run this script to capture stage IDs`);
     }
   } catch (err) {
-    console.log(`  [FAIL] ${err.message}`);
+    console.log(`  [WARN] Could not read pipelines: ${err.message}`);
   }
 }
 
