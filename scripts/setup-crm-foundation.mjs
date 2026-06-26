@@ -4,11 +4,26 @@
  * Setup CRM Foundation for GHL Sub-Account
  * Creates: Custom fields, tags, and sales pipeline (idempotent)
  *
- * Requires: GHL MCP configured with valid API key in .mcp.json
+ * Requires: GHL_ADKINS_API_KEY in .env
  * Usage: node setup-crm-foundation.mjs
  */
 
-const https = require('https');
+import https from 'https';
+import { URL } from 'url';
+import fs from 'fs';
+import path from 'path';
+
+// Load .env file
+const envPath = path.join(path.dirname(import.meta.url).replace('file:///', ''), '..', '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf8');
+  envContent.split('\n').forEach(line => {
+    const [key, value] = line.split('=');
+    if (key && !process.env[key]) {
+      process.env[key] = value;
+    }
+  });
+}
 
 // Configuration — API_KEY MUST be in environment, never hardcoded
 const API_KEY = process.env.GHL_ADKINS_API_KEY;
@@ -19,36 +34,26 @@ const BASE_URL = 'https://services.leadconnectorhq.com';
 const config = {
   CUSTOM_FIELDS: [
     {
-      fieldKey: 'instrument',
-      displayName: 'Instrument',
-      dataType: 'select',
-      placeholder: 'Select instrument',
-      picklist: ['Piano', 'Guitar', 'Voice', 'Drums', 'Violin', 'Other']
+      name: 'Instrument',
+      dataType: 'SINGLE_OPTIONS',
+      options: ['Piano', 'Guitar', 'Voice', 'Drums', 'Violin', 'Other']
     },
     {
-      fieldKey: 'student_age',
-      displayName: 'Student Age',
-      dataType: 'number',
-      placeholder: 'Age'
+      name: 'Student Age',
+      dataType: 'NUMERICAL'
     },
     {
-      fieldKey: 'skill_level',
-      displayName: 'Skill Level',
-      dataType: 'select',
-      placeholder: 'Select skill level',
-      picklist: ['Beginner', 'Intermediate', 'Advanced']
+      name: 'Skill Level',
+      dataType: 'SINGLE_OPTIONS',
+      options: ['Beginner', 'Intermediate', 'Advanced']
     },
     {
-      fieldKey: 'preferred_times',
-      displayName: 'Preferred Times',
-      dataType: 'textarea',
-      placeholder: 'e.g., Weekday evenings, Saturday mornings'
+      name: 'Preferred Times',
+      dataType: 'LARGE_TEXT'
     },
     {
-      fieldKey: 'lead_source',
-      displayName: 'Lead Source',
-      dataType: 'text',
-      placeholder: 'How did they find us?'
+      name: 'Lead Source',
+      dataType: 'TEXT'
     }
   ],
 
@@ -116,14 +121,22 @@ async function setupCustomFields() {
 
   try {
     const existing = await apiRequest('GET', `/locations/${LOCATION_ID}/customFields`);
-    const existingKeys = new Set(existing.customFields?.map(f => f.fieldKey) || []);
+    const existingNames = new Set(existing.customFields?.map(f => f.name) || []);
 
     for (const field of config.CUSTOM_FIELDS) {
-      if (existingKeys.has(field.fieldKey)) {
-        console.log(`  [OK] Field '${field.displayName}' already exists`);
+      if (existingNames.has(field.name)) {
+        console.log(`  [OK] Field '${field.name}' already exists`);
       } else {
-        await apiRequest('POST', `/locations/${LOCATION_ID}/customFields`, field);
-        console.log(`  [OK] Created field '${field.displayName}'`);
+        try {
+          await apiRequest('POST', `/locations/${LOCATION_ID}/customFields`, field);
+          console.log(`  [OK] Created field '${field.name}'`);
+        } catch (err) {
+          if (err.message.includes('already exists')) {
+            console.log(`  [OK] Field '${field.name}' already exists`);
+          } else {
+            throw err;
+          }
+        }
       }
     }
   } catch (err) {
@@ -136,7 +149,7 @@ async function setupTags() {
 
   for (const tag of config.TAGS) {
     try {
-      await apiRequest('POST', `/locations/${LOCATION_ID}/tags`, { tagName: tag });
+      await apiRequest('POST', `/locations/${LOCATION_ID}/tags`, { name: tag });
       console.log(`  [OK] Tag '${tag}' created/exists`);
     } catch (err) {
       if (err.message.includes('409') || err.message.includes('400')) {
@@ -152,7 +165,7 @@ async function setupPipeline() {
   console.log('\n[PIPELINE]');
 
   try {
-    const existing = await apiRequest('GET', '/opportunities/pipelines');
+    const existing = await apiRequest('GET', `/opportunities/pipelines?locationId=${LOCATION_ID}`);
     const pipeline = existing.pipelines?.find(p => p.name === config.PIPELINE.name);
 
     if (pipeline) {
@@ -160,7 +173,8 @@ async function setupPipeline() {
       console.log(`  Stages:`);
       pipeline.stages?.forEach(s => console.log(`    - ${s.name}`));
     } else {
-      const created = await apiRequest('POST', '/opportunities/pipelines', config.PIPELINE);
+      const payload = { ...config.PIPELINE, locationId: LOCATION_ID };
+      const created = await apiRequest('POST', '/opportunities/pipelines', payload);
       console.log(`  [OK] Created pipeline '${config.PIPELINE.name}'`);
       created.stages?.forEach(s => console.log(`    - ${s.name}`));
     }
@@ -195,6 +209,12 @@ async function verify() {
 // ===== MAIN =====
 
 async function main() {
+  if (!API_KEY) {
+    console.error('[FATAL] GHL_ADKINS_API_KEY not set in .env');
+    console.error('Required: GHL_ADKINS_API_KEY=<rotated-pit>');
+    process.exit(1);
+  }
+
   console.log('=== GHL CRM Foundation Setup ===');
   console.log(`Location ID: ${LOCATION_ID}`);
   console.log(`API Key: ${API_KEY.substring(0, 20)}...`);
