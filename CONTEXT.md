@@ -1,15 +1,15 @@
 # Active Stage & Next Step
 
-**Active Stage:** GHL API Integration (PHASE E) — **v2 API ready, form → contact sync next**.
+**Active Stage:** GHL API Integration (PHASE E) — **Omaha form → contact sync LIVE; replicate to 3 more locations next**.
 
 **Status:** 
-- ✅ v1→v2 endpoint migration complete (BASE_URL, Version header, locationId placement)
-- ✅ Website `/api/ghl-contact.ts` updated to v2 format (no /v1/, Version header)
-- ✅ Custom fields created (10: Instrument, Student Age, Skill Level, Preferred Times, Lead Source + 5 defaults)
-- ✅ Tags created (6: trial-requested, trial-booked, trial-completed, enrolled, lost, nurture)
-- ℹ️ Pipeline: **UI-only in GHL v2** (not API-creatable). Must be created in Adkins dashboard once, then script references existing stage IDs.
+- ✅ Omaha form → GHL contact sync working end-to-end (422 fixed, all 8 custom fields populate, verified via MCP)
+- ✅ 422 root cause fixed: `customFields` object → v2 array + dropped consent slugs (website commit `c4a2927`); value-mapping fix (labels not lowercase keys)
+- ✅ MCP reads token live from `.env` via `headersHelper` (`scripts/ghl-mcp-headers.js`); no hardcoded secret in `.mcp.json`
+- ✅ Multi-location runbook written: `adkins-music-website/GHL_LOCATION_ONBOARDING.md`
+- ℹ️ Pipeline: **UI-only in GHL v2** (not API-creatable). Create in Adkins dashboard once, then reference existing stage IDs.
 
-**Last Checkpoint:** A2P 10DLC approved ✓. Form → Supabase sync working ✓. Both repos aligned on v2 API ✓. **Now:** Test form submission → GHL contact creation end-to-end.
+**Last Checkpoint:** Omaha sync verified live. **Now:** Onboard Bellevue/Elkhorn/Gretna per the runbook. BLOCKER: need their GHL **sub-account** IDs (repo only has Supabase UUIDs). Do the per-location `GHL_FIELD_IDS`/`GHL_LOCATION_IDS` refactor before location #2 — do NOT duplicate the Omaha block.
 
 ---
 

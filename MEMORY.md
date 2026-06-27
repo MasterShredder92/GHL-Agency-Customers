@@ -10,6 +10,15 @@
 
 ## [2026-06-25] Restructured CLAUDE.md → MEMORY/AGENTS/CONTEXT router
 
+## [2026-06-26] GHL 422 fixed + MCP dynamic-token + multi-location runbook
+
+- **Fixed website signup 422:** `customFields` sent as object → converted to GHL v2 array `[{id,field_value}]` in `api/ghl-contact.ts` (regex-filters non-ID keys); dropped 3 SMS-consent slugs (consent lives in Supabase only). Commit `c4a2927`.
+- **Value-mapping follow-up:** form sent lowercase ids/keys that don't match SINGLE_OPTIONS picklists; now sends labels (`instrument`→"Piano", `preferred_location`→`LOCATIONS[key].name`).
+- **MCP token was dead (401):** swapped to live `GHL_ADKINS_API_KEY`, then refactored `.mcp.json` to `headersHelper` (`scripts/ghl-mcp-headers.js`) that reads the token live from `.env` — single source, secret out of `.mcp.json`. Verified end-to-end (test contact created, all 8 fields resolved via MCP).
+- **Surfaced the multi-location traps:** two different locationIds (GHL sub-account ID `TCahcPK9X1pptNjBJxP3` vs Supabase UUID in `locations.ts`); each GHL sub-account has its own field IDs; GHL field dataType is immutable. Wrote `adkins-music-website/GHL_LOCATION_ONBOARDING.md` (field spec + steps + AVOID/CHECK). Fixed stale token in website `.env.local`.
+- **Next:** Onboard Bellevue/Elkhorn/Gretna per the runbook — need their GHL sub-account IDs (not in repo); do the per-location `GHL_FIELD_IDS`/`GHL_LOCATION_IDS` refactor before location #2.
+
+
 ## [2026-06-26] GHL v2 API complete — BUILD vs OPERATE architecture mastered
 
 - **Fixed v1→v2 migration:** Removed `/v1/` segments, added Version: 2021-07-28 header, placed locationId in body
