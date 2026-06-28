@@ -1,3 +1,12 @@
+<!--
+FILE:       docs/ghl-config.md
+WHAT:       Canonical GHL agency config: MCP endpoint, API scopes, auth method, and available MCP tools
+READ WHEN:  Making any GHL API or MCP call; verifying scopes before attempting an operation; setting up a new agent or integration
+SKIP WHEN:  Tasks with no GHL API/MCP interaction (e.g., editing repo docs, updating MEMORY.md)
+ROUTES TO:  clients/adkins/client.md — sub-account ID and location-specific field IDs | scripts/ghl-mcp-headers.js — dynamic token loader for MCP | AGENTS.md — R02 (this file is canonical for MCP details)
+HARD RULES: Canonical source for MCP endpoint and API scopes (R02); token lives in .env only, never in this file; locationId for Adkins is in clients/adkins/client.md not here
+-->
+
 # GHL Configuration & API Setup
 
 ---

@@ -1,3 +1,12 @@
+<!--
+FILE:       docs/north-star.md
+WHAT:       Canonical definition of what ZiroWork is, the hub model, and its two honest GHL limits
+READ WHEN:  Positioning ZiroWork for a client; evaluating whether a feature fits the product frame; onboarding a new agent to the product
+SKIP WHEN:  Purely technical tasks (API calls, script fixes, data sync) with no need for product framing
+ROUTES TO:  docs/capabilities.md — the 15 things ZiroWork can deliver | docs/ghl-config.md — GHL technical setup | clients/adkins/client.md — first case study client
+HARD RULES: This is product-frame truth; never modify without Zach's explicit decision; vertical-agnostic framing must be preserved
+-->
+
 # North Star — What ZiroWork Is
 
 ---

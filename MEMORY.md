@@ -1,3 +1,12 @@
+<!--
+FILE:       MEMORY.md
+WHAT:       Append-only session log plus permanent "who Zach is" identity context for all agents
+READ WHEN:  Every session start (per CLAUDE.md); when needing Zach's work style or prior session outcomes
+SKIP WHEN:  Task is purely structural/code with no need for operator identity or history
+ROUTES TO:  CONTEXT.md — current stage continuing from prior sessions | AGENTS.md — rules established across sessions | clients/adkins/client.md — client details referenced in sessions
+HARD RULES: Append-only (newest session on top, never edit past entries); "Who Zach Is" section is permanent and must not be removed
+-->
+
 # Who Zach Is
 
 **Zach Adkins** runs ZiroWork, a done-for-you customer-acquisition service for service-based businesses. The service sits in front of a client's booking/billing (Square, Stripe, etc.); never replaces it. GHL is the engine; Claude Code is the control layer (MCP + API, not dashboard).
@@ -7,6 +16,15 @@
 ---
 
 # Session Log (Newest on Top)
+
+## [2026-06-28] Raven rebuild + repo cleaned to agent-ready
+
+- **New canon = `clients/adkins/raven-scripts/_enrollment-agent/`** (90-day Quo pull + 50-agent rewrite). Old `zirowork-agents` runtime archived → `_archive/zirowork-legacy/`.
+- **Decisions locked:** reply SELECTION from pre-approved hard phrases (LLM only classifies intent — no free generation); GHL is sole system of record (**no Supabase**); channel = GHL LC Phone/Conversations API.
+- **Repo cleaned (health 2.4→8.7):** CLAUDE.md = router/map; 31 docs got routing headers; playbook split into 7 core + `client-ops/` + `_campaigns-deferred/`; legacy + zombie dupes (HARNESS.md, PROGRESS.md) archived; stale `adkins-music-lessons` paths fixed; burned PIT redacted; pricing standardized $200/$180/$160.
+- **New build canon:** `_enrollment-agent/` ARCHITECTURE-AND-PLAN.md, GHL-INTEGRATION.md, HARNESS-HOOKS-LOOPS.md. Cleanup log: `.agent/repo-clean/progress.md`.
+- **CONTEXT.md rewritten** as the single now+next source.
+- **Next:** BUILD Phase 0 — compile canon → `data/*.json`; port FLOW.md → `state-machine.json`; author `pricing.json` (see ARCHITECTURE-AND-PLAN.md §13).
 
 ## [2026-06-25] Restructured CLAUDE.md → MEMORY/AGENTS/CONTEXT router
 

@@ -1,3 +1,12 @@
+<!--
+FILE:       docs/capabilities.md
+WHAT:       The 15 core ZiroWork capabilities, each marked Native or Build, with how each works
+READ WHEN:  Scoping what to build for a client; checking whether a feature is native GHL or requires a custom build
+SKIP WHEN:  Tasks that are already scoped and in-progress (capability is already decided); purely operational API/MCP tasks
+ROUTES TO:  docs/north-star.md — product frame these capabilities serve | docs/ghl-config.md — API/MCP needed to build non-native capabilities | feature_list.json — which capabilities are in scope and their state
+HARD RULES: Native vs Build distinction is load-bearing — do not flip without verifying GHL API docs; 15 capabilities are the product boundary, not a wishlist
+-->
+
 # The 15 Core Capabilities
 
 **All 15 are usable today in any client sub-account.** Each is either Native (works in GHL as-is) or Build (needs Claude Code/API or a connector).

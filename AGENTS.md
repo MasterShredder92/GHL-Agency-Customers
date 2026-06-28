@@ -1,3 +1,12 @@
+<!--
+FILE:       AGENTS.md
+WHAT:       Hard rules canon (R01–R15) every agent must follow before acting
+READ WHEN:  Starting any session or task in this repo; mandatory pre-read per CLAUDE.md
+SKIP WHEN:  Never — CLAUDE.md mandates reading this before doing anything
+ROUTES TO:  CLAUDE.md — repo router | docs/ghl-config.md — MCP/API details (per R02) | clients/adkins/client.md — canonical location IDs (per R02)
+HARD RULES: All 15 rules are non-negotiable; R01 secrets in .env only; R09 WIP=1 at all times
+-->
+
 # Hard Rules Canon (AGENTS.md)
 
 **What correct looks like.** This is the rule set every agent (Claude Code, future agent, human reviewer) must follow. Domain-agnostic. Authority for all structural decisions.
@@ -12,7 +21,7 @@ Read this before doing anything. These rules are NOT suggestions.
 If it's not in the repo, it doesn't exist. Credentials live ONLY in `.env` (gitignored) + env var names in `credentials.md`. Client details ONLY in `clients/<slug>/`. State ONLY in MEMORY.md, CONTEXT.md, DECISIONS.md (not email, not Slack, not external).
 
 ### R02 — Exactly One Source of Truth Per Fact
-Duplication → drift. GHL Location IDs: canonical in `clients/adkins-music-lessons/client.md`. Rules: live here (AGENTS.md). MCP details: canonical in `docs/ghl-config.md`. CLAUDE.md points; it does not restate.
+Duplication → drift. GHL Location IDs: canonical in `clients/adkins/client.md`. Rules: live here (AGENTS.md). MCP details: canonical in `docs/ghl-config.md`. CLAUDE.md points; it does not restate.
 
 ### R03 — Router Stays Hot (≤100 Lines, No Domain)
 CLAUDE.md auto-loads every session. Keep it thin. First three lines: "Read MEMORY.md first — Read AGENTS.md before doing anything — Read CONTEXT.md." Then a repo tree/map. Never restates domain. Domain lives in docs/ and clients/.

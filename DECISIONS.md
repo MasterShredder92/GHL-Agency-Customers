@@ -1,3 +1,12 @@
+<!--
+FILE:       DECISIONS.md
+WHAT:       Append-only log of structural decisions and their reasoning to prevent relitigating settled calls
+READ WHEN:  Before making any structural choice; when a prior decision seems to conflict with current work
+SKIP WHEN:  Routine operational tasks with no structural implications (e.g., updating a contact, sending a message)
+ROUTES TO:  AGENTS.md — rules that drove decisions | CONTEXT.md — current stage decisions affect | docs/north-star.md — product frame referenced in early decisions
+HARD RULES: Append-only (never delete or edit past entries); each entry must include decision + why + impact
+-->
+
 # Decisions — Why Structural Choices Were Made
 
 **Append-only log.** Every structural choice and its reason. Prevents relitigating settled calls.
@@ -26,13 +35,13 @@
 
 **Why:** Domain coupling in the harness (B15, anti-pattern). CLAUDE.md is the entry point every session; if it restates domain, it duplicates docs/ + clients/ (B11). The moment a router restates, two sources of truth exist and drift. Router points → docs/ holds → domain stays one place. Keeps the hot artifact hot (B03).
 
-**Impact:** CLAUDE.md will never be the source of "what is ZiroWork" or "how Adkins works." That lives in docs/north-star.md and clients/adkins-music-lessons/client.md. Router just points.
+**Impact:** CLAUDE.md will never be the source of "what is ZiroWork" or "how Adkins works." That lives in docs/north-star.md and clients/adkins/client.md. Router just points.
 
 ---
 
 ### D03: Client Folders Named by Full Business Name
 
-**Decision:** `clients/adkins-music-lessons/` (not `clients/adkins/`).
+**Decision:** folder slug `clients/adkins/` (short slug). *(Originally recorded here as `adkins-music-lessons`; simplified to `adkins`, which is the actual canonical path. Corrected 2026-06-28.)*
 
 **Why:** Clarity at scale. When you have 50 clients, abbreviated names collide or require mental mapping. Full names are unambiguous and grep-safe. Matches B15 (match structure to size) — even small repos benefit from the habits that scale.
 
@@ -100,6 +109,26 @@
 
 ---
 
+## Session: Stack Confirmation (2026-06-27)
+
+### D14: Twenty CRM Cut Entirely
+
+**Decision:** Twenty CRM is removed. GHL is the sole system of record. Deleted the `twenty` MCP server from `~/.claude.json` (global + system32 project block) and the `mcp__twenty__execute_tool` permission + `enabledMcpjsonServers: ["twenty"]` from `~/.claude/settings.json`. Backups: `.claude.json.bak-twenty`, `.claude/settings.json.bak-twenty`.
+
+**Why:** Two CRMs = two sources of truth = drift. north-star.md already names GHL as the engine and system of record (contact data lives in GHL). Twenty was never sanctioned there. ZiroWork's job is customer routing + storage, which GHL Contacts/fields/tags/pipelines do natively — no second CRM needed.
+
+**Impact:** No Twenty tooling in any session. The Twenty workspace's API key (JWT, no expiry until 2126) should be revoked on the Twenty side. Repo folder is still named `twenty-ZW-CRM` (path-coupled in `.mcp.json` headersHelper + memory dir) — rename is a separate, later cleanup. The Python/Supabase/OpenPhone "Raven" stack is likewise out of scope for routing/storage (GHL-native instead) unless a specific capability provably needs it.
+
+### D15: One GHL Sub-Account, Location as a Custom Field
+
+**Decision:** All 4 Adkins locations (Omaha, Bellevue, Gretna, Elkhorn) live in ONE GHL sub-account. A `preferred_location` custom field distinguishes them; native GHL workflows branch on it for routing. This reverses the prior path of onboarding a separate GHL sub-account per location.
+
+**Why:** Goal is routing + storage for a single business. One sub-account keeps storage in one place and lets routing stay 100% native (workflow if/else on a field). Separate sub-accounts would force cross-sub-account routing/reporting through the API/control layer — the exact complexity we're avoiding. GHL workflows cannot route across sub-accounts natively.
+
+**Impact:** Cancels the "get Bellevue/Elkhorn/Gretna GHL sub-account IDs" blocker and the per-location `GHL_FIELD_IDS`/`GHL_LOCATION_IDS` refactor. Website (`adkins-music-website`) should drop the `if (preferredLoc === 'omaha')` per-sub-account branching: every submission posts to the single Adkins sub-account (`TCahcPK9X1pptNjBJxP3`) with `preferred_location` set. See [[project-ghl-multi-location]].
+
+---
+
 ## Session: Repo Rebuild (2026-06-24, previous)
 
 ### D10: Full Delete of Old Ideology
@@ -124,11 +153,11 @@
 
 ### D12: Adkins as First (and Only) Client Folder
 
-**Decision:** Build clients/adkins-music-lessons/ fully (client.md, credentials.md, notes.md). Leave onboard-subaccount.sh and deploy-snapshot.sh as stubs with TODOs, not full implementations.
+**Decision:** Build clients/adkins/ fully (client.md, credentials.md, notes.md). Leave onboard-subaccount.sh and deploy-snapshot.sh as stubs with TODOs, not full implementations.
 
 **Why:** Adkins is the test case. Seeing the pattern once (one full client folder) guides the next client (copy, adapt). Implementation of onboard/deploy can wait until a second client is ready; the TODOs in the stubs document what to do.
 
-**Impact:** Next client goes faster (copy clients/adkins-music-lessons/ → clients/<new-name>/, adjust). Scripts are not yet needed.
+**Impact:** Next client goes faster (copy clients/adkins/ → clients/<new-name>/, adjust). Scripts are not yet needed.
 
 ---
 

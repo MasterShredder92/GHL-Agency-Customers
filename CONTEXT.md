@@ -1,124 +1,54 @@
+<!--
+FILE:       CONTEXT.md
+WHAT:       Current active stage, status, and next steps (rewritten each session to reflect truth). The single source for "where are we / what's next."
+READ WHEN:  Every session start; before resuming work or deciding what to do next.
+SKIP WHEN:  Pure domain-doc reading or rule auditing with no session state needed.
+ROUTES TO:  clients/adkins/raven-scripts/_enrollment-agent/ARCHITECTURE-AND-PLAN.md — the build roadmap (§13) | .agent/repo-clean/progress.md — the cleanup record | AGENTS.md — rules | feature_list.json — scope/WIP
+HARD RULES: Rewrite each session (not append); one active stage; next step must be command-checkable (R06). This file is the canonical now+next — keep it true.
+-->
+
 # Active Stage & Next Step
 
-**Active Stage:** GHL API Integration (PHASE E) — **Omaha form → contact sync LIVE; replicate to 3 more locations next**.
+**Active Stage:** **Raven enrollment agent — repo cleaned & routed (agent-ready). NEXT = BUILD Phase 0.**
 
-**Status:** 
-- ✅ Omaha form → GHL contact sync working end-to-end (422 fixed, all 8 custom fields populate, verified via MCP)
-- ✅ 422 root cause fixed: `customFields` object → v2 array + dropped consent slugs (website commit `c4a2927`); value-mapping fix (labels not lowercase keys)
-- ✅ MCP reads token live from `.env` via `headersHelper` (`scripts/ghl-mcp-headers.js`); no hardcoded secret in `.mcp.json`
-- ✅ Multi-location runbook written: `adkins-music-website/GHL_LOCATION_ONBOARDING.md`
-- ℹ️ Pipeline: **UI-only in GHL v2** (not API-creatable). Create in Adkins dashboard once, then reference existing stage IDs.
-
-**Last Checkpoint:** Omaha sync verified live. **Now:** Onboard Bellevue/Elkhorn/Gretna per the runbook. BLOCKER: need their GHL **sub-account** IDs (repo only has Supabase UUIDs). Do the per-location `GHL_FIELD_IDS`/`GHL_LOCATION_IDS` refactor before location #2 — do NOT duplicate the Omaha block.
+The repo audit + cleanup is complete. The conversation canon is done. The runtime does not exist yet — that's the build.
 
 ---
 
-## What's Done ✅
-
-### Repo Structure (Phase A — prior sessions)
-- [x] Old content deleted (AGENT.md, SCRIPTS.md, WORKFLOWS.md, etc.)
-- [x] New structure created (CLAUDE.md router, docs/, clients/, scripts/, snapshots/)
-- [x] Adkins Music Lessons client folder (client.md, credentials.md, notes.md)
-- [x] Secrets rotated; .env.local deleted
-- [x] .env.example populated (names only, no values)
-
-### Harness Lockdown (Phase B — prior session)
-- [x] `scripts/verify.sh` — verification gate (exits 0, secret scan, per-client shape, router lint, artifact checklist)
-- [x] PROGRESS.md + DECISIONS.md (cross-session state, append-only decision log)
-- [x] feature_list.json (scope primitive: priority, dependsOn, state, verify per item)
-- [x] HARNESS.md (rule canon R01–R15, enforcer mappings)
-- [x] `.githooks/pre-commit` (hook-wiring; rejects secrets at exit 1)
-- [x] `scripts/init.sh` (environment standup: .env, deps, GHL connectivity)
-- [x] Audit checklist: all green
-
-### Router Restructure (Phase C — this session) ✅ COMPLETE
-- [x] CLAUDE.md rewritten as thin router (46 lines, no domain, 3-line pattern → MEMORY/AGENTS/CONTEXT)
-- [x] MEMORY.md created (session log + "who Zach is"; append-only)
-- [x] PROGRESS.md renamed → CONTEXT.md (current truth; rewrite each session)
-- [x] AGENTS.md created (folded HARNESS.md rules R01–R15; hard rules canon)
-- [x] scripts/update-state.sh created (helper: append timestamped session stub to MEMORY.md)
-- [x] scripts/verify.sh fixed (clients/ check conditional; exits 0 fresh clone ✓ and local ✓)
-- [x] clients/adkins/credentials.md cleaned (removed secrets; now env var names only)
-- [x] feature_list.json updated (added router_restructure section R01–R07, all done)
-- [x] **Committed to main** (efa5601: refactor: restructure CLAUDE.md → MEMORY/AGENTS/CONTEXT router pattern)
-- [x] save-and-update routine: executed and recorded
+## Status (true as of this session)
+- ✅ **Decisions locked:** reply *selection* from hard phrases (LLM only classifies, no free generation) · **GHL** is the only system of record (no Supabase) · channel = GHL LC Phone/Conversations API · legacy `zirowork-agents` runtime archived.
+- ✅ **Canon = `clients/adkins/raven-scripts/_enrollment-agent/`** (90-day Quo + 50-agent rewrite): ENROLLMENT-AGENT.md (doctrine), conversation-library.md (22 routed scenarios), few-shot-bank.md, runtime.json (intent→template), LOCATION-DIFFERENCES.md, variants-corpus.md (offline only). Build specs: **ARCHITECTURE-AND-PLAN.md**, **GHL-INTEGRATION.md**, **HARNESS-HOOKS-LOOPS.md**.
+- ✅ **Repo cleaned:** CLAUDE.md is a router/map; 31 docs got routing headers; playbook split into 7 core + `client-ops/` + `_campaigns-deferred/`; legacy → `_archive/`; stale paths fixed; PIT redacted; pricing standardized ($200/$180/$160). Full record: `.agent/repo-clean/progress.md` (health 2.4 → 8.7).
+- ✅ **A2P 10DLC: APPROVED** (2026-06-26) — SMS unblocked.
+- ✅ **Stack (D14/D15):** Twenty CRM cut; all 4 locations = ONE GHL sub-account (`TCahcPK9X1pptNjBJxP3`) + `preferred_location` field; native-workflow routing.
+- ✅ **Omaha form → GHL contact sync** live end-to-end (v2 API, 8 custom fields, 422 fixed).
+- ℹ️ GHL pipeline is **UI-only to create** (v2 API can't); make once in the Adkins dashboard, then reference stage IDs.
 
 ---
 
-## What's Next (In Order)
+## What's Next (in order)
 
-### PHASE E: GHL API Integration (Current)
+### 1. BUILD the Raven runtime — Phase 0 → 4  (see ARCHITECTURE-AND-PLAN.md §13)
+- **P0 Foundation:** compile the markdown canon → `data/*.json` (runtime.json already is; port FLOW.md → `state-machine.json`; author `pricing.json` from SQUARE.md). *Done = `data/` builds + validates.*
+- **P1 Reply loop (GHL):** webhook → identify → context → classify(LLM) → route → **select hard-phrase reply** → validate → send → update GHL state. *Done = a real inbound text gets a correct, guardrail-passing, context-aware reply; eval-gated.*
+- **P2 Close + book:** teacher match (TEACHER-PROFILES + Square `searchAvailability`) → idempotent `bookings.create`; confirm only after a real booking; failure → HUMAN_REVIEW.
+- **P3 Outbound + drip loop:** form-intake hook fires opener; cron drip D2/D4/D7 → COLD, cancel-on-reply.
+- **P4 Harden:** observability, eval set, idempotency/retry, opt-out/quiet-hours.
 
-**BLOCKERS & FIXES (This Session):**
-1. **API Key Rotation** — COMPLETE (security incident)
-   - Old PIT: burned (pasted in chat, rotated immediately)
-   - New token: stored as `GHL_ADKINS_API_KEY` in `.env` (gitignored)
+### 2. Wire form → GHL (unblocks P3 opener)
+- `clients/adkins/src/lib/ghl.ts` `createGHLContact` is a reference helper, **not wired**. Wire it into the website form intake (need `SignupLanding.tsx` path) OR move to the website repo. Drop the `if (preferredLoc === 'omaha')` per-sub-account branching — every submit posts to the single sub-account with `preferred_location` set (D15).
 
-2. **Endpoint Format Bug** — ROOT CAUSE of 404 errors
-   - ❌ Using: `/v1/contacts/` (v1 end-of-support Dec 31 2025)
-   - ✅ Should use: `/contacts/` (v2 current)
-   - ✅ locationId must be top-level in body (not just in customFields)
-   - ✅ customFields format: array of `{key/id, field_value}` not plain object
-
-**NEXT STEPS:**
-1. ✅ API endpoint migration (v1→v2) complete
-2. ✅ Both repos aligned on v2 format
-3. ✅ Custom fields + tags created in GHL
-4. **[OPTIONAL] Create pipeline in Adkins UI** (for later opportunity workflows; not required for lead capture)
-   - Go to Adkins in GHL → **Opportunities → Pipelines → Create New Pipeline**
-   - Add: "Trial to Enrollment" with stages: New Lead, Contacted, Trial Booked, Trial Completed, Enrolled
-   - Re-run script to capture stage IDs
-5. **Test form → GHL sync:** Submit Adkins form, verify contact appears in GHL with custom fields populated
-6. **Build workflows** (once sync confirmed): F02 Lead Qualification, F03 SMS responses, etc.
-
-### PHASE D: Feature Work — F01 (BLOCKER — gates all SMS)
-
-**THEN (After CRM Foundation + F01 Approved):**
-1. **F01 — A2P 10DLC Approval** (BLOCKER — gates all SMS flows)
-   - Status: awaiting carrier approval (external; typically 3–5 business days)
-   - Until approved: SMS-independent work only (lead capture, email, etc.)
-   - dependsOn: CRM Foundation
-   - Next: check `clients/adkins/notes.md` for approval status; SMS features unlock when approved
-
-### THEN (After F01 Approved)
-
-**Adkins Zero-Limit Core (SMS-dependent):**
-2. **F02 — Lead Capture via GHL Web Form** (SMS-independent, start now)
-3. **F03 — Instant AI SMS Response** (blocked by F01; starts after approval)
-4. **F04 — Follow-Up Sequences** (blocked by F01; starts after approval)
-5. **F05 — Pipeline Management** (SMS-independent, can start now)
-6. **F06 — Reporting & Analytics** (SMS-independent, can start now)
-
-### LATER (Cross-Client Loops)
-7. **F07 — Second Client Onboard** (after Adkins MVP ships)
-8. **L01 — Bulk Reporting Loop** (after ≥2 clients live; deferred per R12)
+### 3. (Optional) Create the GHL pipeline in the Adkins UI
+"Trial to Enrollment" stages (New Lead → Contacted → Trial Booked → Trial Completed → Enrolled); capture stage IDs for opportunity advancement.
 
 ---
 
-## Blockers
-
-- **SignupLanding.tsx file path** (user has website repo in different location)
-  - Need exact path to integrate ghl.ts contact creation
-  - Blocks form → GHL sync (non-blocking on submit, fire-and-forget)
+## Open blockers
+- **`SignupLanding.tsx` path** (website repo, separate location) — needed to wire `ghl.ts`. Non-blocking on submit (fire-and-forget), blocks the live opener.
 
 ---
 
-## Last Known Good State
-
-- Repo structure: correct per REPO_BLUEPRINT.md Phase A
-- Verification gate: present, functional, exits 0 (both clients/ present and absent)
-- Secrets: rotated; no leaks in current repo
-- Router (CLAUDE.md): 50 lines, domain-free, points to MEMORY/AGENTS/CONTEXT
-- Client folder (Adkins): sealed, structure validated
-- Harness: rule canon + state + scope + verification all in place
-- Save-and-update routine: wired (update-state.sh + AGENTS.md rule)
-
----
-
-## Operational Notes
-
-- WIP=1: only one feature in `"state": "in_progress"` at a time
-- After every step: run `bash scripts/verify.sh` (must exit 0)
-- Before commit: run `scripts/update-state.sh` (appends session stub); then refresh CONTEXT.md's active-stage and next-step
-- Secrets: ONLY in .env (gitignored). .env.example has names only.
-- Clients stays gitignored. On clone: `verify.sh` skips per-client checks if clients/ absent.
+## Operational notes
+- WIP=1 (feature_list.json). Secrets ONLY in `.env`. `clients/` stays gitignored.
+- Cleanup log: `.agent/repo-clean/progress.md`. Build detail: `_enrollment-agent/ARCHITECTURE-AND-PLAN.md`.
+- Gate: `scripts/verify.sh` exists and is wired via `.githooks/pre-commit`; run `bash scripts/verify.sh` (must exit 0) before commits.

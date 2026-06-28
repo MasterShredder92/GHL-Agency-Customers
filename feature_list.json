@@ -143,8 +143,8 @@
       "priority": "blocker",
       "dependsOn": [],
       "state": "pending",
-      "verify": "grep -i 'approved' clients/adkins-music-lessons/notes.md || echo 'awaiting approval'",
-      "notes": "Blocks all SMS-dependent features (F02, F03, F04). Status: awaiting carrier approval. See clients/adkins-music-lessons/notes.md."
+      "verify": "grep -i 'approved' clients/adkins/notes.md || echo 'awaiting approval'",
+      "notes": "Blocks all SMS-dependent features (F02, F03, F04). Status: awaiting carrier approval. See clients/adkins/notes.md."
     },
     {
       "id": "F02_lead_qualification_workflow",
