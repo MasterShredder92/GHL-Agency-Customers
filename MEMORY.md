@@ -17,6 +17,15 @@ HARD RULES: Append-only (newest session on top, never edit past entries); "Who Z
 
 # Session Log (Newest on Top)
 
+## [2026-06-28] Doc-graph verifier + de-bloat
+
+- **Built `scripts/check-docs.mjs`** (wired into verify.sh): LINKS / ORPHANS / HEADERS / ONE-NOW / WIP — a reference-graph check for docs (the "knip for markdown"). Link targets classified by asking **git** (tracked / `git check-ignore` / neither) so the verifier holds no second copy of `.gitignore`. Negative tests prove it bites.
+- **Fixed `fail()`/`set -e` bug** in verify.sh — it exited on the first failure returning green, hiding every later check. Added `node --check` (syntax) + **loud** `⚠ SHELL SCRIPTS UNCHECKED` skip (shellcheck not installed).
+- **De-bloat:** deleted the second rule canon (`_archive/zirowork-legacy/HARNESS.md`) + third now-file (PROGRESS.md) + one-time `.agent/repo-clean/progress.md` (folded → DECISIONS.md **D16**); `feature_list.json` 217 → 87 lines (stripped done harness/router bookkeeping).
+- **Under-routing fixed:** added `scripts/README.md` (scripts index) + routed it and `docs/capabilities.md` from CLAUDE.md. Tagged R01/R09 with their enforcers; refreshed the stale Gate Checks table in AGENTS.md.
+- **Moved** loose `16 teachers…csv` → gitignored `clients/adkins/`.
+- **Next:** unchanged — BUILD Phase 0 (compile canon → `data/*.json`). Optional: install shellcheck; enforce it as a hard fail in CI when a second machine/CI appears.
+
 ## [2026-06-28] Raven rebuild + repo cleaned to agent-ready
 
 - **New canon = `clients/adkins/raven-scripts/_enrollment-agent/`** (90-day Quo pull + 50-agent rewrite). Old `zirowork-agents` runtime archived → `_archive/zirowork-legacy/`.

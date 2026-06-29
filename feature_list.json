@@ -4,138 +4,9 @@
     "harness_version": "locked-2026-06-25",
     "router_version": "restructured-2026-06-25",
     "wip_limit": 1,
-    "verify_command": "bash scripts/verify.sh"
+    "verify_command": "bash scripts/verify.sh",
+    "history": "Harness lockdown (H01–H07) and router restructure (R01–R07) are complete. Their rationale is in DECISIONS.md (D01–D09, D16) and the build log in MEMORY.md. This file tracks LIVE scope only."
   },
-  "harness_lockdown": [
-    {
-      "id": "H01_verify_gate",
-      "title": "Verification gate (scripts/verify.sh)",
-      "priority": "critical",
-      "dependsOn": [],
-      "state": "done",
-      "verify": "bash scripts/verify.sh",
-      "notes": "Gate created, exits 0. Checks: secrets scan, hardcoded IDs, per-client shape, router lint."
-    },
-    {
-      "id": "H02_state_artifacts",
-      "title": "State artifacts (PROGRESS.md + DECISIONS.md)",
-      "priority": "critical",
-      "dependsOn": ["H01_verify_gate"],
-      "state": "done",
-      "verify": "test -f PROGRESS.md && test -f DECISIONS.md",
-      "notes": "PROGRESS.md: where we are + next steps. DECISIONS.md: why each choice was made (append-only)."
-    },
-    {
-      "id": "H03_feature_list",
-      "title": "Scope primitive (feature_list.json)",
-      "priority": "critical",
-      "dependsOn": ["H02_state_artifacts"],
-      "state": "done",
-      "verify": "test -f feature_list.json && grep -q 'dependsOn' feature_list.json",
-      "notes": "This file. Enforces sequencing + WIP=1. Data, not prose. Prevents agent from skipping steps."
-    },
-    {
-      "id": "H04_harness_md",
-      "title": "Harness rule canon (HARNESS.md)",
-      "priority": "critical",
-      "dependsOn": ["H03_feature_list"],
-      "state": "done",
-      "verify": "test -f HARNESS.md && grep -q 'R01' HARNESS.md",
-      "notes": "The standard this repo is measured against. Domain-free rules (R01–R15+). Crosswalks to REPO_BLUEPRINT.md."
-    },
-    {
-      "id": "H05_hook_wiring",
-      "title": "Hook wiring (.githooks/pre-commit)",
-      "priority": "critical",
-      "dependsOn": ["H04_harness_md"],
-      "state": "done",
-      "verify": "test -f .githooks/pre-commit && grep -q 'verify.sh' .githooks/pre-commit",
-      "notes": "Makes the gate binding. Pre-commit runs verify.sh; non-zero exit refuses commit. Not bypassable."
-    },
-    {
-      "id": "H06_init_script",
-      "title": "Init script (scripts/init.sh)",
-      "priority": "critical",
-      "dependsOn": ["H05_hook_wiring"],
-      "state": "done",
-      "verify": "test -f scripts/init.sh && grep -q '.env.example' scripts/init.sh",
-      "notes": "One-shot environment setup: .env from template, deps, GHL MCP reachable, PIT valid. Runs before feature work."
-    },
-    {
-      "id": "H07_audit_checklist",
-      "title": "Audit checklist (all green)",
-      "priority": "critical",
-      "dependsOn": ["H06_init_script"],
-      "state": "done",
-      "verify": "bash scripts/verify.sh && grep -c '\\[X\\]' PROGRESS.md",
-      "notes": "All 10 audit boxes pass. Harness is locked. Ready for feature work or loops."
-    }
-  ],
-  "router_restructure": [
-    {
-      "id": "R01_claude_md_router",
-      "title": "CLAUDE.md rewritten as thin router",
-      "priority": "critical",
-      "dependsOn": ["H07_audit_checklist"],
-      "state": "done",
-      "verify": "bash scripts/verify.sh && grep -q 'MEMORY.md' CLAUDE.md && grep -q 'AGENTS.md' CLAUDE.md && grep -q 'CONTEXT.md' CLAUDE.md",
-      "notes": "First 3 lines: Read MEMORY, AGENTS, CONTEXT. Then repo tree. ≤100 lines, domain-free."
-    },
-    {
-      "id": "R02_memory_md",
-      "title": "MEMORY.md created (session log + who Zach is)",
-      "priority": "critical",
-      "dependsOn": ["R01_claude_md_router"],
-      "state": "done",
-      "verify": "test -f MEMORY.md && grep -q 'Who Zach Is' MEMORY.md && grep -q 'Session Log' MEMORY.md",
-      "notes": "Append-only: session log (newest on top) + 'who Zach is' (user profile). Enables cross-session continuity."
-    },
-    {
-      "id": "R03_context_md",
-      "title": "CONTEXT.md created (renamed PROGRESS.md, rewritten with truth)",
-      "priority": "critical",
-      "dependsOn": ["R02_memory_md"],
-      "state": "done",
-      "verify": "test -f CONTEXT.md && grep -q 'Active Stage' CONTEXT.md",
-      "notes": "Current stage, next steps, last checkpoint. Rewritten each session (not append-only). Deletes PROGRESS.md."
-    },
-    {
-      "id": "R04_agents_md",
-      "title": "AGENTS.md created (hard rules canon, folded from HARNESS.md)",
-      "priority": "critical",
-      "dependsOn": ["R03_context_md"],
-      "state": "done",
-      "verify": "test -f AGENTS.md && grep -q 'R01.*Source of Truth' AGENTS.md",
-      "notes": "Folded HARNESS.md rules (R01–R15) + agent responsibilities. HARNESS.md deleted after."
-    },
-    {
-      "id": "R05_update_state_sh",
-      "title": "scripts/update-state.sh created (save-and-update helper)",
-      "priority": "critical",
-      "dependsOn": ["R04_agents_md"],
-      "state": "done",
-      "verify": "test -f scripts/update-state.sh && grep -q 'Session stub' scripts/update-state.sh",
-      "notes": "Appends timestamped session-entry stub to MEMORY.md. Called before commit to enable save-and-update routine."
-    },
-    {
-      "id": "R06_verify_sh_fix",
-      "title": "scripts/verify.sh fixed (clients/ check conditional)",
-      "priority": "critical",
-      "dependsOn": ["R05_update_state_sh"],
-      "state": "done",
-      "verify": "bash scripts/verify.sh; echo 'Exit: '$?",
-      "notes": "clients/ check now skips if absent (fresh clone). Updated artifact checks: MEMORY/AGENTS/CONTEXT instead of HARNESS/PROGRESS. Added router ref check."
-    },
-    {
-      "id": "R07_feature_list_update",
-      "title": "feature_list.json updated (restructure as done items)",
-      "priority": "critical",
-      "dependsOn": ["R06_verify_sh_fix"],
-      "state": "done",
-      "verify": "test -f feature_list.json && grep -q 'router_restructure' feature_list.json",
-      "notes": "Added router_restructure section (R01–R07, all done). Verified: exit 0 both ways (clients/ present and absent)."
-    }
-  ],
   "feature_work": [
     {
       "id": "F01_a2p_approval",
@@ -150,7 +21,7 @@
       "id": "F02_lead_qualification_workflow",
       "title": "Adkins Lead Qualification workflow",
       "priority": "high",
-      "dependsOn": ["H07_audit_checklist", "F01_a2p_approval"],
+      "dependsOn": ["F01_a2p_approval"],
       "state": "pending",
       "verify": "TODO: confirm GHL workflow exists via GHL API call",
       "notes": "Trigger: contact form submit. Action: send SMS via LC Phone. Condition: if responds → tag 'Qualified', else 'Nurture'."
@@ -177,7 +48,7 @@
       "id": "F05_social_autopost",
       "title": "Social auto-posting (CSV → GHL)",
       "priority": "medium",
-      "dependsOn": ["H07_audit_checklist"],
+      "dependsOn": [],
       "state": "pending",
       "verify": "TODO: confirm CSV upload + GHL social integration",
       "notes": "Load posts via Advanced CSV. Deploy to Adkins initially, then scale to other locations."
@@ -195,7 +66,7 @@
       "id": "F07_onboard_next_client",
       "title": "Onboard second client",
       "priority": "low",
-      "dependsOn": ["H07_audit_checklist", "F06_scale_to_locations"],
+      "dependsOn": ["F06_scale_to_locations"],
       "state": "pending",
       "verify": "bash scripts/onboard-subaccount.sh <slug> '<name>' && test -f clients/<slug>/client.md",
       "notes": "Implements scripts/onboard-subaccount.sh. Adkins is proof; second client validates the snapshot and onboard script."
@@ -206,11 +77,11 @@
       "id": "L01_cross_client_reporting",
       "title": "Cross-client bulk reporting loop",
       "priority": "low",
-      "dependsOn": ["H07_audit_checklist", "F07_onboard_next_client"],
+      "dependsOn": ["F07_onboard_next_client"],
       "state": "pending",
       "verify": "bash scripts/bulk-report.sh && test -f reports/bulk-report-*.html",
-      "notes": "NOT A LOOP YET. Blocked by harness green + ≥2 active clients. Will become a loop (daily, capped) once feature work is done. See LOOPS.md (TBD)."
+      "notes": "NOT A LOOP YET. Blocked by ≥2 active clients. Will become a capped daily loop once feature work is done."
     }
   ],
-  "notes": "WIP=1: only one item in-flight at a time. dependsOn enforces sequencing. Verify command per item. Feature work starts AFTER harness audit (H07) is green."
+  "notes": "WIP=1: only one item in-flight at a time (enforced by scripts/check-docs.mjs). dependsOn enforces sequencing; every id referenced resolves within this file. Verify command per item. Completed harness/router history → DECISIONS.md."
 }

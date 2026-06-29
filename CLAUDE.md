@@ -40,13 +40,12 @@ docs/               ← domain knowledge (load only when the task needs it)
   north-star.md       what ZiroWork is
   ghl-config.md       GHL agency/API/MCP/Location IDs
   capabilities.md     GHL capabilities (native vs build)
-scripts/            ← verify.sh (gate), init.sh, update-state.sh, setup/onboarding
+scripts/            ← verify.sh (gate), init.sh, update-state.sh, setup/onboarding (see scripts/README.md)
 clients/<slug>/     ← sealed per client (gitignored)
   client.md           canonical IDs + profile
   credentials.md      env var NAMES only
   notes.md / TODO.md  history + working order
   raven-scripts/      ← the client's enrollment agent (see "If working on the agent" below)
-_archive/           ← deprecated (old runtime, superseded docs). Do NOT read or import.
 ```
 
 ---
@@ -60,6 +59,8 @@ _archive/           ← deprecated (old runtime, superseded docs). Do NOT read o
 | Why a choice was made | [DECISIONS.md](./DECISIONS.md) |
 | What ZiroWork is | [docs/north-star.md](./docs/north-star.md) |
 | GHL API / MCP / Location IDs | [docs/ghl-config.md](./docs/ghl-config.md) |
+| GHL capabilities (native vs build) | [docs/capabilities.md](./docs/capabilities.md) |
+| Which script does what / when to run | [scripts/README.md](./scripts/README.md) |
 | A client's profile / canonical IDs | `clients/<slug>/client.md` |
 | **Enrollment agent — build it** | `clients/<slug>/raven-scripts/_enrollment-agent/ARCHITECTURE-AND-PLAN.md` |
 | **Agent — doctrine / templates / FAQ** | `clients/<slug>/raven-scripts/_enrollment-agent/ENROLLMENT-AGENT.md` |

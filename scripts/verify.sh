@@ -17,7 +17,7 @@ fail_count=0
 
 # Helper: print status
 pass() { echo -e "${GREEN}✓${NC} $1"; }
-fail() { echo -e "${RED}✗${NC} $1"; ((fail_count++)); }
+fail() { echo -e "${RED}✗${NC} $1"; fail_count=$((fail_count + 1)); }
 
 echo "=== ZiroWork Verification Gate ==="
 echo
@@ -204,6 +204,55 @@ if [ -d ".githooks" ] || [ -d ".husky" ]; then
   pass "Hook directory exists"
 else
   echo "⚠ Hook directory missing (will be set up in hook-wire step)"
+fi
+
+echo
+
+# ============================================================================
+# 7. DOC GRAPH & HYGIENE (links, orphans, headers, one-now, WIP)
+# ============================================================================
+echo "Checking doc graph (links / orphans / headers / one-now / WIP)..."
+
+if node scripts/check-docs.mjs; then
+  pass "Doc graph clean"
+else
+  fail "Doc graph has problems (see above)"
+fi
+
+echo
+
+# ============================================================================
+# 8. SHELL LINT (shellcheck — skipped if not installed)
+# ============================================================================
+echo "Linting shell scripts..."
+
+if command -v shellcheck >/dev/null 2>&1; then
+  if shellcheck -S error scripts/*.sh .githooks/* 2>/dev/null; then
+    pass "shellcheck: no error-level findings"
+  else
+    fail "shellcheck found error-level problems (see above)"
+  fi
+else
+  echo -e "${RED}⚠ SHELL SCRIPTS UNCHECKED${NC} — shellcheck not installed; scripts/*.sh + hooks were NOT linted (run: scoop install shellcheck)"
+fi
+
+echo
+
+# ============================================================================
+# 9. SCRIPT SYNTAX (node --check on every tracked .mjs/.js)
+# ============================================================================
+echo "Checking JS/MJS syntax..."
+
+syntax_bad=0
+while IFS= read -r jsf; do
+  [ -z "$jsf" ] && continue
+  if ! node --check "$jsf" 2>/dev/null; then
+    fail "  → syntax error in $jsf"
+    syntax_bad=1
+  fi
+done < <(git ls-files '*.mjs' '*.js')
+if [ "$syntax_bad" -eq 0 ]; then
+  pass "All tracked .mjs/.js parse"
 fi
 
 echo

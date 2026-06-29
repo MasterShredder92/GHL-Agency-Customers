@@ -170,3 +170,17 @@ HARD RULES: Append-only (never delete or edit past entries); each entry must inc
 **Impact:** Old PITs, tokens, webhook keys from Session 1 are invalid. New ones are in use only in the human's local .env (gitignored).
 
 ---
+
+## Session: Doc-Graph Verifier + De-Bloat (2026-06-28)
+
+### D16: Verifier Owns Structure; Drift Becomes a Failing Gate
+
+**Decision:** Extend `scripts/verify.sh` with a doc-graph validator (`scripts/check-docs.mjs`) and collapse the duplicated state docs. Concretely: (1) LINKS — every markdown link + `ROUTES TO:` target must be tracked OR on-disk; (2) ORPHANS — every tracked `*.md` must be reachable from CLAUDE.md by following links/routes; (3) HEADERS — every tracked `*.md` carries the FILE/WHAT/READ WHEN/SKIP WHEN/ROUTES TO/HARD RULES block; (4) ONE-NOW — exactly one tracked current-stage file, and it is CONTEXT.md; (5) WIP — ≤ `meta.wip_limit` feature_list items in progress; plus shellcheck (skipped if absent) and `node --check` on all tracked JS/MJS. Deleted the root `_archive/zirowork-legacy/` (HARNESS.md was a second rule canon; PROGRESS.md a third "now" file) and `.agent/repo-clean/progress.md` (one-time cleanup log) — its scorecard is folded here.
+
+**Cleanup record folded in (was `.agent/repo-clean/progress.md`, health 2.4 → 8.7):** legacy runtime + zombie root governance dupes archived then now deleted; CLAUDE.md rewritten as router+map; 31 docs got routing headers; playbook split into 7 core + `client-ops/` + `_campaigns-deferred/`; stale `adkins-music-lessons` paths fixed; burned PIT redacted; pricing standardized $200/$180/$160.
+
+**Why:** Tracked canon was pointing at untracked/missing files and three docs each claimed to be "where we are" — the staleness mechanism in the flesh. A reference-graph check (links + orphans) is the doc-world equivalent of `knip` for imports: it makes a dangling pointer or a duplicated state-doc a *failing commit*, not a thing a human has to notice. Since the human commits (not the agent), the pre-commit hook firing on the human's commit is the right shape — it blocks the commit if an agent left drift behind. Link targets are classified by asking git itself — tracked / `git check-ignore` / neither — so the verifier keeps no second copy of the ignore list to drift from `.gitignore`: deliberately-ignored targets (e.g. the sealed `clients/` tree, D11) are disk-checked when present and skipped when absent; a target that is neither tracked nor ignored fails as a genuine dangling reference.
+
+**Impact:** "Definition of done" for any doc change collapses to one line: `bash scripts/verify.sh` exits 0. Rule prose in AGENTS.md (R01 secrets, R09 WIP=1) is now mechanically enforced rather than relying on an agent remembering it — the prose is left in place as canon (renumbering R01–R15 would break cross-references in feature_list.json and verify.sh), but the rules can no longer be silently violated. One tracked "now" file (CONTEXT.md); one rule canon (AGENTS.md).
+
+---

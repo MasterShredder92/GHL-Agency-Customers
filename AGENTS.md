@@ -19,6 +19,7 @@ Read this before doing anything. These rules are NOT suggestions.
 
 ### R01 — Repo Is Source of Truth
 If it's not in the repo, it doesn't exist. Credentials live ONLY in `.env` (gitignored) + env var names in `credentials.md`. Client details ONLY in `clients/<slug>/`. State ONLY in MEMORY.md, CONTEXT.md, DECISIONS.md (not email, not Slack, not external).
+*Enforced (mechanical part — secrets never tracked): `scripts/verify.sh` SECRET SCAN; see R11.*
 
 ### R02 — Exactly One Source of Truth Per Fact
 Duplication → drift. GHL Location IDs: canonical in `clients/adkins/client.md`. Rules: live here (AGENTS.md). MCP details: canonical in `docs/ghl-config.md`. CLAUDE.md points; it does not restate.
@@ -42,7 +43,8 @@ Build it before polish. A broken gate catches more bugs than code review. Harnes
 MEMORY.md: who Zach is + session log (append-only, newest on top). CONTEXT.md: current stage + next steps + last checkpoint (rewrite each session to reflect truth). DECISIONS.md: what was chosen and why (append-only, never deleted). Next session reads these first.
 
 ### R09 — One Unit of Work in Flight (WIP=1)
-Enforced by feature_list.json. Starting 10 features and finishing none = chaos. Finishing one, then one more = progress. Only one item in `"state": "in_progress"` at a time.
+Starting 10 features and finishing none = chaos. Finishing one, then one more = progress. Only one item in `"state": "in_progress"` at a time.
+*Enforced: `scripts/check-docs.mjs` WIP check (≤ `meta.wip_limit` items in_progress in feature_list.json).*
 
 ### R10 — Initialization Is Its Own Phase
 Before any feature work runs, the record and environment must be correct. scripts/init.sh stands up .env, deps, and GHL connectivity. Every new session calls `scripts/init.sh` before `scripts/verify.sh`.
@@ -116,6 +118,10 @@ If verify.sh exits non-zero:
 | R03 (Router is thin + domain-free) | CLAUDE.md ≤ 100 lines | router is bloated |
 | R03 (Router is domain-free) | CLAUDE.md has no domain keywords | domain logic leaked into harness |
 | R05 (Primitives exist) | Gate, MEMORY.md, AGENTS.md, CONTEXT.md, DECISIONS.md, feature_list.json present | harness is incomplete |
+| R02 (One source / routing) | `check-docs.mjs` LINKS + ORPHANS: every link/route resolves; every doc reachable from CLAUDE.md | dangling pointer or orphan doc |
+| R08 (State hygiene) | `check-docs.mjs` HEADERS + ONE-NOW: routing header on every doc; exactly one now-file (CONTEXT.md) | unheadered doc or duplicate state doc |
+| R09 (WIP=1) | `check-docs.mjs` WIP: ≤ `meta.wip_limit` items in_progress | parallel work, no focus |
+| R07 (Verification) | `node --check` on every tracked `.mjs`/`.js`; shellcheck on `.sh` (loud skip if absent) | broken script ships |
 
 ---
 
@@ -147,4 +153,4 @@ Never tracked (will be caught by gate):
 
 ## Last Updated
 
-2026-06-25 (session: router restructure, Phase C)
+2026-06-28 (session: doc-graph verifier + de-bloat; R01/R09 enforcer tags)
