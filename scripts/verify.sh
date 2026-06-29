@@ -258,6 +258,26 @@ fi
 echo
 
 # ============================================================================
+# 10. RAVEN ENROLLMENT AGENT GATE (clients/ is gitignored — run if present)
+# ============================================================================
+echo "Checking Raven enrollment agent (if present)..."
+
+RAVEN_DIR="clients/adkins/raven-scripts/_enrollment-agent"
+if [ ! -d "$RAVEN_DIR" ]; then
+  pass "Raven agent absent (gitignored/fresh clone — OK)"
+elif ! command -v node >/dev/null 2>&1; then
+  echo -e "${RED}⚠ Raven agent UNCHECKED${NC} — node not found"
+else
+  if ( cd "$RAVEN_DIR" && node data/validate.mjs >/dev/null 2>&1 && node --test src/raven.test.ts >/dev/null 2>&1 && node evals/run.ts >/dev/null 2>&1 ); then
+    pass "Raven agent: data validates + tests + evals pass"
+  else
+    fail "Raven agent: gate FAILED — run: (cd $RAVEN_DIR && npm run check)"
+  fi
+fi
+
+echo
+
+# ============================================================================
 # SUMMARY
 # ============================================================================
 echo "=== Summary ==="

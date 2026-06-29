@@ -17,6 +17,17 @@ HARD RULES: Append-only (newest session on top, never edit past entries); "Who Z
 
 # Session Log (Newest on Top)
 
+## [2026-06-29] Raven runtime BUILT (P0+P1) + rebuilt from REAL threads + self-defending
+
+- **Built the runtime** in `_enrollment-agent/src/` (plain TS, Node runs `.ts` natively, zero deps): the reply loop ingest→classify→route→**select**→validate→send→update. Seams stubbed: classifier = keyword stub, store = in-memory, sender = dry-run, **booker** seam. P0 data plane (`data/*.json`) validates against schemas.
+- **Caught the corpus was synthetic:** `variants-corpus.md` / conversation-library / few-shot are AI-reconstructions ("not canon"). Real source = `_quo-pull/threads/*.txt` (50 threads, 32 signed). Mined all 50 → **REAL-FLOW.md** (skeleton OPENER→BRIDGE→[QUALIFY]→CONFIRM_AVAILABILITY→OFFER_TIMES→ASSUME_CLOSE→INFO→ONBOARD + side-quests + steer-back). Quarantined synthetic → `_deprecated-synthetic/`.
+- **state-machine.json → STEERING FSM** (each state has an `objective`; side-quests answer + return to flow — "we run the conversation"). **runtime.json = 44 verbatim real templates.** Pricing LOCKED $200/$180/$160/$400/$50 + $320 referral.
+- **Model aligned to real GHL form** (from a live contact + screenshots): First/Last = **student**; **Preferred Time** = availability window ("Saturday 10am-3p"), not a day; Military?/Has-Instrument?/Student-Age/Skill-Level. (See auto-memory `reference_lead_form_schema`.)
+- **Testing discipline (Zach plays customer via `src/chat.ts` dry-run):** 15 findings logged in **TEST-LOG.md**, each minimal-fix + test. 2 real leads (Paul, Andrew) booked clean start-to-finish in dry-run.
+- **Self-defending:** `npm run check` = validate + content audit + 20 tests + **4 golden-conversation evals** (`evals/cases.json`); wired into `verify.sh` → pre-commit (regression refuses commit). Runtime pre-send validator blocks bad sends always.
+- ⚠️ **Agent is gitignored (clients/) → local-only, not in git.** Needs a backup/versioning plan.
+- **Open finding:** adult self-learners addressed in 3rd person — fix off Student Age. **Next:** that fix, then P2 Square booking behind the `book` seam; then LLM classifier; then live GHL.
+
 ## [2026-06-28] Doc-graph verifier + de-bloat
 
 - **Built `scripts/check-docs.mjs`** (wired into verify.sh): LINKS / ORPHANS / HEADERS / ONE-NOW / WIP — a reference-graph check for docs (the "knip for markdown"). Link targets classified by asking **git** (tracked / `git check-ignore` / neither) so the verifier holds no second copy of `.gitignore`. Negative tests prove it bites.
